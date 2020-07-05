@@ -38,7 +38,10 @@ async def putea(ctx, *, name):
         'eri puro wn',
         'tu mamá es el vitoco',
         'puro perro logi ql',
-        'deja de dar dislikes tonto wn'
+        'deja de dar dislikes tonto wn',
+        'maldito sapo conchetumare',
+        'chupala meando',
+        'prepara las nalgas porque te voy a dejar como bambi'
     ]
     await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
 
@@ -52,5 +55,31 @@ async def hola(ctx):
       'que queri ahora ql'
     ]
     await ctx.send(random.choice(greetings))
+
+@bot.command()
+async def pregunta(ctx):
+    answer =[
+        "En mi opinión, sí",
+        "Es cierto",
+        "Es decididamente así",
+        "Probablemente",
+        "Buen pronóstico",
+        "Todo apunta a que sí",
+        "Sin duda",
+        "Sí",
+        "Sí - definitivamente",
+        "Debes confiar en ello",
+        "Respuesta vaga, vuelve a intentarlo",
+        "Pregunta en otro momento",
+        "Será mejor que no te lo diga ahora",
+        "No puedo predecirlo ahora",
+        "Concéntrate y vuelve a preguntar",
+        "No cuentes con ello",
+        "Mi respuesta es no",
+        "Mis fuentes me dicen que no",
+        "Las perspectivas no son buenas",
+        "Muy dudoso"
+      ]
+    await ctx.send(random.choice(answer))
 
 bot.run(TOKEN)
