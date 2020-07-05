@@ -32,4 +32,14 @@ async def say(ctx, *, message):
     channel = discord.utils.get(ctx.guild.text_channels, name='general')
     await channel.send(message)
 
+@bot.command()
+async def putea(ctx, *, name):
+    lista = [
+        'eri puro wn', 
+        'tu mamá es el vitoco', 
+        'puro perro logi ql', 
+        'deja de dar dislikes tonto wn'
+    ]
+    await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
+
 bot.run(TOKEN)
