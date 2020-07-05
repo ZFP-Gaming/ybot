@@ -50,6 +50,6 @@ async def hola(ctx):
       'wena wena',
       'kiu majaji'
     ]
-    await ctx(send(random.choice(greetings)))
+    await ctx.send(random.choice(greetings))
 
 bot.run(TOKEN)
