@@ -35,11 +35,21 @@ async def say(ctx, *, message):
 @bot.command()
 async def putea(ctx, *, name):
     lista = [
-        'eri puro wn', 
-        'tu mamá es el vitoco', 
-        'puro perro logi ql', 
+        'eri puro wn',
+        'tu mamá es el vitoco',
+        'puro perro logi ql',
         'deja de dar dislikes tonto wn'
     ]
     await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
+
+@bot.command()
+async def hola(ctx):
+    greetings = [
+      'ola',
+      'olas :ocean:',
+      'wena wena',
+      'kiu majaji'
+    ]
+    await ctx(send(random.choice(greetings)))
 
 bot.run(TOKEN)
