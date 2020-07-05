@@ -48,7 +48,8 @@ async def hola(ctx):
       'ola',
       'olas :ocean:',
       'wena wena',
-      'kiu majaji'
+      'kiu majaji',
+      'que queri ahora ql'
     ]
     await ctx.send(random.choice(greetings))
 
