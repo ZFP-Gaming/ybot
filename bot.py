@@ -13,7 +13,7 @@ bot = commands.Bot(command_prefix='ybot ')
 
 @bot.event
 async def on_ready():
-	  game = discord.Game('con tu bieja')
+	  game = discord.Game('Viendo porno de enanos')
 	  await bot.change_presence(status=discord.Status.idle, activity=game)
 
 @bot.command()
