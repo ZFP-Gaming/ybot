@@ -7,11 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
 COVID_URL = os.getenv('COVID_URL')
 ANIME_URL = os.getenv('ANIME_URL')
 
-bot = commands.Bot(command_prefix='ybot ')
+bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 
 @bot.event
 async def on_ready():
@@ -120,7 +121,7 @@ async def otaku(ctx, *, query):
 
     title = response['results'][0]['title']
     title1 = response['results'][1]['title']
-    score = response['results'][0]['score'] 
+    score = response['results'][0]['score']
     score1 = response['results'][1]['score']
     message = f'''Título: {title}\nPuntuacion: {score}
     \nTitulo: {title1}\nPuntuacion: {score1}
