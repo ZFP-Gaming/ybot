@@ -14,8 +14,8 @@ bot = commands.Bot(command_prefix='ybot ')
 
 @bot.event
 async def on_ready():
-	  game = discord.Game('Viendo porno de enanos')
-	  await bot.change_presence(status=discord.Status.idle, activity=game)
+    game = discord.Game('Viendo porno de enanos')
+    await bot.change_presence(status=discord.Status.idle, activity=game)
 
 @bot.command()
 async def ping(ctx):
@@ -83,7 +83,7 @@ async def pregunta(ctx):
         'Las perspectivas no son buenas',
         'Muy dudoso'
     ]
-    await ctx.send(random.choice(answer)) 
+    await ctx.send(random.choice(answer))
 
 @bot.command(name='horoscopo')
 async def fortune(ctx, sign):
@@ -110,6 +110,7 @@ async def covid(ctx):
     confirmed = response['confirmed']['value']
     recovered = response['recovered']['value']
     deaths = response['deaths']['value']
-    await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
+    covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
+    await covid_data.add_reaction('\U0001F1EB')
 
 bot.run(TOKEN)
