@@ -47,14 +47,14 @@ async def putea(ctx, *, name):
     ]
     await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
 
-@bot.command()
-async def hola(ctx):
+@bot.command(aliases=['hola', 'ola', 'holas', 'olas', 'wenas', 'wena'])
+async def greet(ctx):
     greetings = [
-        'ola',
         'olas :ocean:',
         'wena wena',
         'kiu majaji',
-        'que queri ahora ql'
+        'que queri ahora ql',
+        f'hola po {ctx.message.author.name}'
     ]
     await ctx.send(random.choice(greetings))
 
