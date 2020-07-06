@@ -9,6 +9,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 YOLI_URL = os.getenv('YOLI_URL')
 COVID_URL = os.getenv('COVID_URL')
+ANIME_URL = os.getenv('ANIME_URL')
 
 bot = commands.Bot(command_prefix='ybot ')
 
@@ -109,8 +110,24 @@ async def covid(ctx):
     confirmed = response['confirmed']['value']
     recovered = response['recovered']['value']
     deaths = response['deaths']['value']
-    covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
     await covid_data.add_reaction('\U0001F1EB')
+    covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
 
-print('ORISA ONLINE')
+@bot.command()
+async def otaku(ctx, *, query):
+    req = requests.get(url = ANIME_URL + query)
+    response = req.json()
+
+    title = response['results'][0]['title']
+    title1 = response['results'][1]['title']
+    score = response['results'][0]['score'] 
+    score1 = response['results'][1]['score']
+    message = f'''Título: {title}\nPuntuacion: {score}
+    \nTitulo: {title1}\nPuntuacion: {score1}
+    '''
+    await ctx.send(message)
+
+print('CHORIZA ONLINE')
+
+
 bot.run(TOKEN)
