@@ -111,24 +111,23 @@ async def covid(ctx):
     confirmed = response['confirmed']['value']
     recovered = response['recovered']['value']
     deaths = response['deaths']['value']
-    await covid_data.add_reaction('\U0001F1EB')
     covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
+    await covid_data.add_reaction('\U0001F1EB')
 
 @bot.command()
 async def otaku(ctx, *, query):
     req = requests.get(url = ANIME_URL + query)
     response = req.json()
 
-    title = response['results'][0]['title']
-    title1 = response['results'][1]['title']
-    score = response['results'][0]['score']
-    score1 = response['results'][1]['score']
-    message = f'''Título: {title}\nPuntuacion: {score}
-    \nTitulo: {title1}\nPuntuacion: {score1}
-    '''
-    await ctx.send(message)
+    embed = discord.Embed(
+        colour = discord.Colour.purple()
+    )
+
+    embed.add_field(name = response['results'][0]['title'], value = f':star: {response["results"][0]["score"]}', inline = False)
+    embed.add_field(name = response['results'][1]['title'], value = f':star: {response["results"][1]["score"]}', inline = False)
+    embed.set_image(url= response['results'][0]['image_url'])
+    await ctx.send(embed=embed)
 
 print('CHORIZA ONLINE')
-
 
 bot.run(TOKEN)
