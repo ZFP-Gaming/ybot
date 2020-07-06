@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 YOLI_URL = os.getenv('YOLI_URL')
+COVID_URL = os.getenv('COVID_URL')
 
 bot = commands.Bot(command_prefix='ybot ')
 
@@ -82,7 +83,7 @@ async def pregunta(ctx):
         'Las perspectivas no son buenas',
         'Muy dudoso'
     ]
-    await ctx.send(random.choice(answer))
+    await ctx.send(random.choice(answer)) 
 
 @bot.command(name='horoscopo')
 async def fortune(ctx, sign):
@@ -100,5 +101,15 @@ async def fortune(ctx, sign):
         template = '❤️ {love}\n🤒 {health}\n💰 {money}\n🔢 {number}\n🎨 {color}\n'
         response = template.format(**prediction_data)
     await ctx.send(response)
+
+@bot.command()
+async def covid(ctx):
+    req = requests.get(url = COVID_URL)
+    response = req.json()
+
+    confirmed = response['confirmed']['value']
+    recovered = response['recovered']['value']
+    deaths = response['deaths']['value']
+    await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
 
 bot.run(TOKEN)
