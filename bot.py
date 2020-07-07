@@ -118,14 +118,19 @@ async def covid(ctx):
 async def otaku(ctx, *, query):
     req = requests.get(url = ANIME_URL + query)
     response = req.json()
+    found = next(item for item in response['results'] if item['title'].lower() == query.lower())
 
     embed = discord.Embed(
         colour = discord.Colour.purple()
     )
 
-    embed.add_field(name = response['results'][0]['title'], value = f':star: {response["results"][0]["score"]}', inline = False)
-    embed.add_field(name = response['results'][1]['title'], value = f':star: {response["results"][1]["score"]}', inline = False)
-    embed.set_image(url= response['results'][0]['image_url'])
+    if found:
+        embed.add_field(name=found['title'], value=f':star: {found["score"]}', inline=False)
+        embed.set_image(url=found['image_url'])
+    else:
+        embed.add_field(name=response['results'][0]['title'], value=f':star: {response["results"][0]["score"]}', inline=False)
+        embed.set_image(url=response['results'][0]['image_url'])
+
     await ctx.send(embed=embed)
 
 print('CHORIZA ONLINE')
