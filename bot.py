@@ -118,7 +118,7 @@ async def covid(ctx):
 async def otaku(ctx, *, query):
     req = requests.get(url = ANIME_URL + query)
     response = req.json()
-    found = next((item for item in response['results'] if item['title'].lower() == query.lower()), None)
+    found = next(item for item in response['results'] if item['title'].lower() == query.lower())
 
     embed = discord.Embed(
         colour = discord.Colour.purple()
