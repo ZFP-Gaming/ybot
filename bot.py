@@ -11,6 +11,7 @@ BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
 COVID_URL = os.getenv('COVID_URL')
 ANIME_URL = os.getenv('ANIME_URL')
+INUTIL_URL = os.getenv('INUTIL_URL')
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 
@@ -136,6 +137,14 @@ async def otaku(ctx, *, query):
         embed.set_image(url=response['results'][0]['image_url'])
 
     await ctx.send(embed=embed)
+
+@bot.command()
+async def dato(ctx):
+    req = requests.get(url = INUTIL_URL)
+    response = req.json()
+
+    dato = response['text']
+    await ctx.send(dato)
 
 print('CHORIZA ONLINE')
 
