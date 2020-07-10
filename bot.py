@@ -2,7 +2,8 @@ import os
 import random
 import discord
 import requests
-import pdb
+import pdb # pdb.set_trace()
+import pymongo
 from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -149,20 +150,38 @@ async def dato(ctx):
     dato = response['text']
     await ctx.send(dato)
 
+@bot.command()
+async def id(ctx):
+    await ctx.send(ctx.message.mentions[0].id)
+
 @bot.command(name='tio', aliases=['tia'])
 async def uncle(ctx, *, params):
-    uncles = client.bot.uncles
-    id = ctx.message.mentions[0].id
-    data = uncles.find_one({'id': id})
-    value = int(params.split(' ')[-1])
-    if data:
-        points = int(data['points'])
-        new_points = points + value
-        uncles.update_one({'id': id}, {'$set': {'points': new_points}})
-        value = new_points
+    if ctx.message.author.id == 134688787002425344:
+        uncles = client.bot.uncles
+        id = ctx.message.mentions[0].id
+        data = uncles.find_one({'id': id})
+        value = int(params.split(' ')[-1])
+        if data:
+            points = int(data['points'])
+            new_points = points + value
+            uncles.update_one({'id': id}, {'$set': {'points': new_points, 'name': ctx.message.mentions[0].name}})
+            value = new_points
+        else:
+            uncles.insert_one({'id': id, 'points': value, 'name': ctx.message.mentions[0].name})
+        await ctx.send(f'{ctx.message.mentions[0].name} tiene {value} puntos')
     else:
-        uncles.insert_one({'id': id, 'points': value})
-    await ctx.send(f'{ctx.message.mentions[0].name} tiene {value} puntos')
+        await ctx.send('Este comando sólo está disponible para Martinolix')
+
+@bot.command(name='tios')
+async def uncles_ranking(ctx):
+    uncles = client.bot.uncles
+    sorted = list(uncles.find().sort('points', pymongo.DESCENDING))
+    embed = discord.Embed(color=0xff66cf)
+    ranking = ''
+    for i in range(len(sorted)):
+        ranking = ranking + f'{i+1}) {sorted[i]["name"]}\n'
+    embed.add_field(name='Ranking de tíos', value=ranking, inline=False)
+    await ctx.send(embed=embed)
 
 print('CHORIZA ONLINE')
 
