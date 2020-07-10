@@ -115,7 +115,7 @@ async def covid(ctx):
     covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
     await covid_data.add_reaction('\U0001F1EB')
 
-@bot.command()
+@bot.command(aliases = ['anime'])
 async def otaku(ctx, *, query):
     req = requests.get(url = ANIME_URL + query)
     response = req.json()
