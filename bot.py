@@ -2,8 +2,10 @@ import os
 import random
 import discord
 import requests
+import pdb
 from discord.ext import commands
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -13,6 +15,7 @@ COVID_URL = os.getenv('COVID_URL')
 ANIME_URL = os.getenv('ANIME_URL')
 INUTIL_URL = os.getenv('INUTIL_URL')
 
+client = MongoClient()
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 
 @bot.event
@@ -145,6 +148,21 @@ async def dato(ctx):
 
     dato = response['text']
     await ctx.send(dato)
+
+@bot.command(name='tio', aliases=['tia'])
+async def uncle(ctx, *, params):
+    uncles = client.bot.uncles
+    id = ctx.message.mentions[0].id
+    data = uncles.find_one({'id': id})
+    value = int(params.split(' ')[-1])
+    if data:
+        points = int(data['points'])
+        new_points = points + value
+        uncles.update_one({'id': id}, {'$set': {'points': new_points}})
+        value = new_points
+    else:
+        uncles.insert_one({'id': id, 'points': value})
+    await ctx.send(f'{ctx.message.mentions[0].name} tiene {value} puntos')
 
 print('CHORIZA ONLINE')
 
