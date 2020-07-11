@@ -201,7 +201,7 @@ async def quien(ctx):
     if data:
         await ctx.send(f'{name} es {data["description"]}')
     else:
-        await ctx.send(f'No conozco a {name}')
+        await ctx.send(f'No conozco a ese culiao que se hace llamar {name}')
 
 print('CHORIZA ONLINE')
 
