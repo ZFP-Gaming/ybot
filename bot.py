@@ -188,7 +188,8 @@ async def soy(ctx, *, description):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
     if data:
-        members.update_one({'id': id}, {'$set':{"description" : description } })
+        name = ctx.message.author.nick or ctx.message.author.name
+        members.update_one({'id': id}, {'$set':{"description" : description, 'name': name } })
     else:
         members.insert_one({'id': id, 'description': description})
 
@@ -196,10 +197,11 @@ async def soy(ctx, *, description):
 async def quien(ctx):
     id = ctx.message.mentions[0].id
     data = members.find_one({'id': id})
+    name = ctx.message.mentions[0].nick or ctx.message.mentions[0].name
     if data:
-        await ctx.send(f'{ctx.message.mentions[0].name} es {data["description"]}')
+        await ctx.send(f'{name} es {data["description"]}')
     else:
-        await ctx.send(f'No conozco a {ctx.message.mentions[0].name}')
+        await ctx.send(f'No conozco a {name}')
 
 print('CHORIZA ONLINE')
 
