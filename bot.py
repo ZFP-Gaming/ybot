@@ -17,6 +17,8 @@ ANIME_URL = os.getenv('ANIME_URL')
 INUTIL_URL = os.getenv('INUTIL_URL')
 
 client = MongoClient()
+members = client.bot.members
+uncles = client.bot.uncles
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 
 @bot.event
@@ -157,14 +159,13 @@ async def id(ctx):
 @bot.command(name='tio', aliases=['tia'])
 async def uncle(ctx, *, params):
     if ctx.message.author.id == 134688787002425344:
-        uncles = client.bot.uncles
         id = ctx.message.mentions[0].id
         data = uncles.find_one({'id': id})
         value = int(params.split(' ')[-1])
         if data:
             points = int(data['points'])
             new_points = points + value
-            uncles.update_one({'id': id}, {'$set': {'points': new_points, 'name': ctx.message.mentions[0].name}})
+            uncles.update_one({'id': id}, {'$set': {'points': new_points}})
             value = new_points
         else:
             uncles.insert_one({'id': id, 'points': value, 'name': ctx.message.mentions[0].name})
@@ -174,7 +175,6 @@ async def uncle(ctx, *, params):
 
 @bot.command(name='tios')
 async def uncles_ranking(ctx):
-    uncles = client.bot.uncles
     sorted = list(uncles.find().sort('points', pymongo.DESCENDING))
     embed = discord.Embed(color=0xff66cf)
     ranking = ''
@@ -182,6 +182,24 @@ async def uncles_ranking(ctx):
         ranking = ranking + f'{i+1}) {sorted[i]["name"]}\n'
     embed.add_field(name='Ranking de tíos', value=ranking, inline=False)
     await ctx.send(embed=embed)
+
+@bot.command()
+async def soy(ctx, *, description): 
+    id = ctx.message.author.id
+    data = members.find_one({'id': id})
+    if data:
+        members.update_one({'id': id}, {'$set':{"description" : description } })
+    else:
+        members.insert_one({'id': id, 'description': description})
+
+@bot.command()
+async def quien(ctx):
+    id = ctx.message.mentions[0].id
+    data = members.find_one({'id': id})
+    if data:
+        await ctx.send(f'{ctx.message.mentions[0].name} es {data["description"]}')
+    else:
+        await ctx.send(f'No conozco a {ctx.message.mentions[0].name}')
 
 print('CHORIZA ONLINE')
 
