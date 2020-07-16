@@ -15,6 +15,9 @@ YOLI_URL = os.getenv('YOLI_URL')
 COVID_URL = os.getenv('COVID_URL')
 ANIME_URL = os.getenv('ANIME_URL')
 INUTIL_URL = os.getenv('INUTIL_URL')
+GSE_KEY = os.getenv('GSE_KEY')
+GSE_ID = os.getenv('GSE_ID')
+SEARCH_URL = os.getenv('SEARCH_URL')
 
 client = MongoClient()
 members = client.bot.members
@@ -184,7 +187,7 @@ async def uncles_ranking(ctx):
     await ctx.send(embed=embed)
 
 @bot.command()
-async def soy(ctx, *, description): 
+async def soy(ctx, *, description):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
     if data:
@@ -202,6 +205,25 @@ async def quien(ctx):
         await ctx.send(f'{name} es {data["description"]}')
     else:
         await ctx.send(f'No conozco a ese culiao que se hace llamar {name}')
+
+@bot.command(aliases=['fotos', 'foto'])
+async def image(ctx, *, query):
+    params = {
+        'q': query,
+        'searchType': 'image',
+        'safe': 'high',
+        'fields': 'items(link)',
+        'cx': GSE_ID,
+        'key': GSE_KEY
+    }
+    data = requests.get(SEARCH_URL, params=params).json()
+    if 'items' in data and len(data['items']) > 0:
+        embed = discord.Embed(color=0x00ff2a)
+        embed.set_image(url=random.choice(data['items'])['link'])
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send('No encontré resultados')
+
 
 print('CHORIZA ONLINE')
 
