@@ -18,6 +18,7 @@ INUTIL_URL = os.getenv('INUTIL_URL')
 GSE_KEY = os.getenv('GSE_KEY')
 GSE_ID = os.getenv('GSE_ID')
 SEARCH_URL = os.getenv('SEARCH_URL')
+YOUTUBE_URL = os.getenv('YOUTUBE_URL')
 
 client = MongoClient()
 members = client.bot.members
@@ -218,6 +219,47 @@ async def image(ctx, *, query):
     }
     data = requests.get(SEARCH_URL, params=params).json()
     if 'items' in data and len(data['items']) > 0:
+        embed = discord.Embed(color=0x00ff2a)
+        embed.set_image(url=random.choice(data['items'])['link'])
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send('No encontré resultados')
+
+@bot.command(aliases=['jif'])
+async def gif(ctx, *, query):
+    params = {
+        'q': query,
+        'searchType': 'image',
+        'safe': 'high',
+        'fileType': 'gif',
+        'hq': 'animated',
+        'tbs': 'itp:animated',
+        'fields': 'items(link)',
+        'cx': GSE_ID,
+        'key': GSE_KEY
+    }
+    data = requests.get(SEARCH_URL, params=params).json()
+    if 'items' in data and len(data['items']) > 0:
+        embed = discord.Embed(color=0x00fffb)
+        embed.set_image(url=random.choice(data['items'])['link'])
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send('No encontré resultados')
+
+@bot.command(aliases=['yt', 'yutu'])
+async def youtube(ctx, *, query):
+    params = {
+        'q': query,
+        'key': GSE_KEY,
+        'part': 'id',
+        'type': 'video',
+        'order': 'relevance',
+        'maxResults': 15
+    }
+    data = requests.get(YOUTUBE_URL, params=params).json()
+    if 'items' in data and len(data['items']) > 0:
+        video_id = data['items'][0]['id']['videoId']
+        await ctx.send(f'https://youtu.be/{video_id}')
         embed = discord.Embed(color=0x00ff2a)
         embed.set_image(url=random.choice(data['items'])['link'])
         await ctx.send(embed=embed)
