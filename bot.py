@@ -87,6 +87,7 @@ async def info(ctx):
 
 @bot.command(name='habla')
 async def say(ctx, *, message):
+    print(f'{ctx.message.author.name} >> {ctx.message.content}')
     channel = discord.utils.get(ctx.guild.text_channels, name='general')
     await channel.send(message)
 
