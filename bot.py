@@ -32,7 +32,7 @@ def manage_karma(id, amount):
     member = members.find_one({'id': id})
     value = 0 + amount
     if member:
-        points = int(member['karma'])
+        points = int(member['karma']) if 'karma' in 'member' else 0
         new_points = points + amount
         members.update_one({'id': id}, {'$set': {'karma': new_points}})
         value = new_points
