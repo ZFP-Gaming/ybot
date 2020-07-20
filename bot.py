@@ -7,8 +7,10 @@ import pymongo
 from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from datetime import datetime
 
 load_dotenv()
+KARMA_COOLDOWN = 1
 TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
@@ -20,14 +22,55 @@ GSE_ID = os.getenv('GSE_ID')
 SEARCH_URL = os.getenv('SEARCH_URL')
 YOUTUBE_URL = os.getenv('YOUTUBE_URL')
 
-client = MongoClient()
-members = client.bot.members
-uncles = client.bot.uncles
+db = MongoClient()
+members = db.bot.members
+uncles = db.bot.uncles
+actions = db.bot.actions
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
+
+def manage_karma(id, amount):
+    member = members.find_one({'id': id})
+    value = 0 + amount
+    if member:
+        points = int(member['karma'])
+        new_points = points + amount
+        members.update_one({'id': id}, {'$set': {'karma': new_points}})
+        value = new_points
+    else:
+        members.insert_one({'id': id, 'description': '', 'karma': value})
+    return value
+
+def last_interaction(author, user):
+    last_action = actions.find_one({'author': author, 'user': user})
+    if last_action:
+        diff = datetime.now() - last_action['updated_at']
+        return round(diff.seconds / 60)
+    else:
+        return 100
 
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="porno de enanos"))
+
+@bot.event
+async def on_message(message):
+    if '++' in message.content or '--' in message.content:
+        user = message.mentions[0].id
+        author = message.author.id
+        modifier = 1 if '++' in message.content else - 1
+        minutes = last_interaction(author, user)
+        if modifier > 0 and user == author:
+            await message.channel.send('No seai fresco, -- por pao')
+            value = manage_karma(user, -1)
+            await message.channel.send(f'{message.mentions[0].name} tiene {value} karma')
+        elif minutes < KARMA_COOLDOWN:
+            await message.channel.send(f'Inténtalo en {KARMA_COOLDOWN - minutes} minuto(s)')
+        else:
+            value = manage_karma(user, modifier)
+            actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()})
+            await message.channel.send(f'{message.mentions[0].name} tiene {value} karma')
+    else:
+        await bot.process_commands(message)
 
 @bot.command()
 async def ping(ctx):
@@ -195,14 +238,14 @@ async def soy(ctx, *, description):
         name = ctx.message.author.nick or ctx.message.author.name
         members.update_one({'id': id}, {'$set':{"description" : description, 'name': name } })
     else:
-        members.insert_one({'id': id, 'description': description})
+        members.insert_one({'id': id, 'description': description, 'karma': 0})
 
 @bot.command()
 async def quien(ctx):
     id = ctx.message.mentions[0].id
     data = members.find_one({'id': id})
     name = ctx.message.mentions[0].nick or ctx.message.mentions[0].name
-    if data:
+    if data and data['description'] != '':
         await ctx.send(f'{name} es {data["description"]}')
     else:
         await ctx.send(f'No conozco a ese culiao que se hace llamar {name}')
