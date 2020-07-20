@@ -261,8 +261,6 @@ async def youtube(ctx, *, query):
         video_id = data['items'][0]['id']['videoId']
         await ctx.send(f'https://youtu.be/{video_id}')
         embed = discord.Embed(color=0x00ff2a)
-        embed.set_image(url=random.choice(data['items'])['link'])
-        await ctx.send(embed=embed)
     else:
         await ctx.send('No encontré resultados')
 
