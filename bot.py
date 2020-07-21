@@ -10,7 +10,7 @@ from pymongo import MongoClient
 from datetime import datetime
 
 load_dotenv()
-KARMA_COOLDOWN = 1
+KARMA_COOLDOWN = 30
 TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
