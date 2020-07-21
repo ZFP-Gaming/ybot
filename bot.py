@@ -21,6 +21,8 @@ GSE_KEY = os.getenv('GSE_KEY')
 GSE_ID = os.getenv('GSE_ID')
 SEARCH_URL = os.getenv('SEARCH_URL')
 YOUTUBE_URL = os.getenv('YOUTUBE_URL')
+EXCHANGE_APP_ID = os.getenv('EXCHANGE_APP_ID')
+EXCHANGE_URL = os.getenv('EXCHANGE_URL')
 
 db = MongoClient()
 members = db.bot.members
@@ -308,6 +310,19 @@ async def youtube(ctx, *, query):
     else:
         await ctx.send('No encontré resultados')
 
+@bot.command(aliases=['convierte', 'convertir', 'plata', '$'])
+async def convert(ctx, *, query):
+    values = query.split(' ')
+    amount = int(values[0])
+    currency = values[1].upper()
+    data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
+    usd = data['rates']['USD']
+    base = data['rates']['CLP']
+    target = data['rates'][currency]
+    in_usd = amount / target
+    final = round(base * in_usd)
+    formatted = '{0:,}'.format(final)
+    await ctx.send(f'🏦 {amount} {currency} → ${formatted} CLP')
 
 print('CHORIZA ONLINE')
 
