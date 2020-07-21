@@ -68,7 +68,7 @@ async def on_message(message):
         else:
             value = manage_karma(user, modifier)
             actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()})
-            await message.channel.send(f'{message.mentions[0].name} tiene {value} karma')
+            await message.channel.send(f'{message.mentions[0].name} tiene {value} puntos de karma')
     else:
         await bot.process_commands(message)
 
