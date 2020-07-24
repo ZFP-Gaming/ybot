@@ -253,7 +253,7 @@ async def quien(ctx):
     else:
         await ctx.send(f'No conozco a ese culiao que se hace llamar {name}')
 
-@bot.command(aliases=['fotos', 'foto'])
+@bot.command(aliases=['fotos', 'foto', 'img'])
 async def image(ctx, *, query):
     params = {
         'q': query,
@@ -266,7 +266,7 @@ async def image(ctx, *, query):
     data = requests.get(SEARCH_URL, params=params).json()
     if 'items' in data and len(data['items']) > 0:
         embed = discord.Embed(color=0x00ff2a)
-        embed.set_image(url=random.choice(data['items'])['link'])
+        embed.set_image(url=data['items'][0]['link'])
         await ctx.send(embed=embed)
     else:
         await ctx.send('No encontré resultados')
@@ -287,7 +287,7 @@ async def gif(ctx, *, query):
     data = requests.get(SEARCH_URL, params=params).json()
     if 'items' in data and len(data['items']) > 0:
         embed = discord.Embed(color=0x00fffb)
-        embed.set_image(url=random.choice(data['items'])['link'])
+        embed.set_image(url=data['items'][0]['link'])
         await ctx.send(embed=embed)
     else:
         await ctx.send('No encontré resultados')
