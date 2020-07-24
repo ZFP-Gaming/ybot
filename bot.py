@@ -324,6 +324,45 @@ async def convert(ctx, *, query):
     formatted = '{0:,}'.format(final)
     await ctx.send(f'🏦 {amount} {currency} → ${formatted} CLP')
 
+@bot.command(description='Traduce al idioma de Guru Guru')
+async def guru(ctx, *, text):
+    output = []
+    letters = {
+        'a': 'a',
+        'b': 'g',
+        'c': 'c',
+        'd': 'g',
+        'e': 'e',
+        'f': 'j',
+        'g': 'g',
+        'h': 'h',
+        'i': 'i',
+        'j': 'j',
+        'k': 'k',
+        'l': 'g',
+        'm': 'ñ',
+        'n': 'gn',
+        'ñ': 'ggni',
+        'o': 'o',
+        'p': 'c',
+        'q': 'q',
+        'r': 'cggg',
+        's': 'j',
+        't': 'c',
+        'u': 'u',
+        'v': 'g',
+        'w': 'w',
+        'x': 'kj',
+        'y': 'y',
+        'z': 'j'
+    }
+
+    for element in text:
+        char = letters[element] if element in letters else element
+        output.append(char)
+
+    await ctx.send(''.join(output))
+
 print('CHORIZA ONLINE')
 
 bot.run(TOKEN)
