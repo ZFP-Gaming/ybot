@@ -23,6 +23,7 @@ SEARCH_URL = os.getenv('SEARCH_URL')
 YOUTUBE_URL = os.getenv('YOUTUBE_URL')
 EXCHANGE_APP_ID = os.getenv('EXCHANGE_APP_ID')
 EXCHANGE_URL = os.getenv('EXCHANGE_URL')
+UTM_URL = os.getenv('UTM_URL')
 
 db = MongoClient()
 members = db.bot.members
@@ -362,6 +363,29 @@ async def guru(ctx, *, text):
         output.append(char)
 
     await ctx.send(''.join(output))
+
+@bot.command()
+async def uf(ctx, *, query):
+    req = requests.get(url = UTM_URL)
+    response = req.json()
+    values = query.split(' ')
+    amount = int(values[0])
+    values_uf = response['uf']['valor']
+    total = amount*values_uf
+
+    await ctx.send(f'{amount} UF son ${total} pesos')
+
+@bot.command()
+async def utm(ctx, *, query):
+    req = requests.get(url = UTM_URL)
+    response = req.json()
+    values = query.split(' ')
+    amount = int(values[0])
+    values_utm = response['utm']['valor']
+    total = amount*values_utm
+
+    await ctx.send(f'{amount} UTM son ${total} pesos')
+
 
 print('CHORIZA ONLINE')
 
