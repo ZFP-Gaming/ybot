@@ -398,7 +398,6 @@ async def imdb(ctx, *, query):
     args = query.split(',')
     if args[-1].isnumeric():
         url = f'{IMDB_URL}{args[0]}&y={args[-1]}'
-    print(url)
     data = requests.get(f'{url}&apikey={IMDB_KEY}').json()
     if data['Response'] == 'True':
         embed = discord.Embed(title=data['Title'], color=0xffea00)
