@@ -373,8 +373,9 @@ async def uf(ctx, *, query):
     values_uf = response['uf']['valor']
     total = amount*values_uf
     total_entero = int(total)
+    formatted = '{0:,}'.format(total_entero)
 
-    await ctx.send(f'🏦 {amount} UF son ${total_entero} pesos')
+    await ctx.send(f'🏦 {amount} UF son ${formatted} pesos')
 
 @bot.command()
 async def utm(ctx, *, query):
@@ -385,8 +386,9 @@ async def utm(ctx, *, query):
     values_utm = response['utm']['valor']
     total = amount*values_utm
     total_entero = int(total)
+    formatted = '{0:,}'.format(total_entero)
 
-    await ctx.send(f'🏦 {amount} UTM son ${total_entero} pesos')
+    await ctx.send(f'🏦 {amount} UTM son ${formatted} pesos')
 
 
 print('CHORIZA ONLINE')
