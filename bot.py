@@ -24,6 +24,8 @@ YOUTUBE_URL = os.getenv('YOUTUBE_URL')
 EXCHANGE_APP_ID = os.getenv('EXCHANGE_APP_ID')
 EXCHANGE_URL = os.getenv('EXCHANGE_URL')
 UTM_URL = os.getenv('UTM_URL')
+IMDB_URL = os.getenv('IMDB_URL')
+IMDB_KEY = os.getenv('IMDB_KEY')
 
 db = MongoClient()
 members = db.bot.members
@@ -390,6 +392,27 @@ async def utm(ctx, *, query):
 
     await ctx.send(f'🏦 {amount} UTM son ${formatted} pesos')
 
+@bot.command(aliases=['peli', 'serie'])
+async def imdb(ctx, *, query):
+    url = f'{IMDB_URL}{query}'
+    args = query.split(',')
+    if args[-1].isnumeric():
+        url = f'{IMDB_URL}{args[0]}&y={args[-1]}'
+    print(url)
+    data = requests.get(f'{url}&apikey={IMDB_KEY}').json()
+    if data['Response'] == 'True':
+        embed = discord.Embed(title=data['Title'], color=0xffea00)
+        if data['Poster'] != 'N/A':
+            embed.set_thumbnail(url=data['Poster'])
+        if data['Ratings']:
+            found = next(item for item in data['Ratings'] if item['Source'] == 'Internet Movie Database' or item['Source'] == 'Rotten Tomatoes')
+            embed.add_field(name="⭐️", value=found['Value'], inline=False)
+        embed.add_field(name="Director", value=data['Director'], inline=False)
+        embed.add_field(name="Año", value=data['Year'], inline=False)
+        embed.add_field(name="Género", value=data['Genre'], inline=False)
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send('No encontré resultados')
 
 print('CHORIZA ONLINE')
 
