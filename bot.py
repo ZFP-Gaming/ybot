@@ -77,6 +77,17 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
+@bot.command(aliases = ['karma'])
+async def karma_ranking(ctx):
+    sorted = list(members.find().sort('karma', pymongo.DESCENDING))
+    embed = discord.Embed(color=0xff66cf)
+    ranking = ''
+    for i in range(len(sorted)):
+        user = bot.get_user(sorted[i]["id"])
+        ranking = ranking + f'{i+1}) {user.name}\n'
+    embed.add_field(name='Ranking de karma', value=ranking, inline=False)
+    await ctx.send(embed=embed)
+
 @bot.command()
 async def ping(ctx):
     await ctx.send('pong')
