@@ -37,7 +37,7 @@ def manage_karma(id, amount):
     member = members.find_one({'id': id})
     value = 0 + amount
     if member:
-        points = int(member['karma']) if 'karma' in 'member' else 0
+        points = int(member['karma']) if 'karma' in member else 0
         new_points = points + amount
         members.update_one({'id': id}, {'$set': {'karma': new_points}})
         value = new_points
@@ -72,7 +72,7 @@ async def on_message(message):
             await message.channel.send(f'Inténtalo en {KARMA_COOLDOWN - minutes} minuto(s)')
         else:
             value = manage_karma(user, modifier)
-            actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()})
+            actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()}, upsert=True)
             await message.channel.send(f'{message.mentions[0].name} tiene {value} puntos de karma')
     else:
         await bot.process_commands(message)
