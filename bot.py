@@ -92,6 +92,8 @@ async def karma_ranking(ctx):
         if 'karma' not in sorted[i]:
             continue
         user = bot.get_user(sorted[i]["id"])
+        if user.bot:
+            continue
         formatted_counter = medals[i] if i in medals else '🏅'
         formatted_karma = str(int(sorted[i]['karma'])).ljust(3, '\a')
         ranking = ranking + f'{formatted_counter} {user.name}: {formatted_karma}\n'
