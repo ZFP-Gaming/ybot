@@ -59,7 +59,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if '++' in message.content or '--' in message.content:
+    if ('++' in message.content or '--' in message.content) and message.mentions:
         user = message.mentions[0].id
         author = message.author.id
         modifier = 1 if '++' in message.content else - 1
