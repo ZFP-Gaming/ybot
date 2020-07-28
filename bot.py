@@ -77,7 +77,7 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
-@bot.command(aliases = ['karma'])
+@bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
     sorted = list(members.find().sort('karma', pymongo.DESCENDING))
     embed = discord.Embed(color=0xffffff)
