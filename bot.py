@@ -87,6 +87,7 @@ async def karma_ranking(ctx):
         1: '🥈',
         2: '🥉'
     }
+    medals[len(sorted) - 1] = '💩'
     for i in range(len(sorted)):
         if 'karma' not in sorted[i]:
             continue
