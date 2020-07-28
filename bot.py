@@ -93,7 +93,7 @@ async def karma_ranking(ctx):
             continue
         user = bot.get_user(sorted[i]["id"])
         formatted_counter = medals[i] if i in medals else '🏅'
-        formatted_karma = str(sorted[i]['karma']).ljust(3, '\a')
+        formatted_karma = str(int(sorted[i]['karma'])).ljust(3, '\a')
         ranking = ranking + f'{formatted_counter} {user.name}: {formatted_karma}\n'
     embed.add_field(name='Ranking de karma', value=ranking, inline=False)
     await ctx.send(embed=embed)
