@@ -292,7 +292,7 @@ async def image(ctx, *, query):
     data = requests.get(SEARCH_URL, params=params).json()
     if 'items' in data and len(data['items']) > 0:
         embed = discord.Embed(color=0x00ff2a)
-        embed.set_image(url=data['items'][0]['link'])
+        embed.set_image(url=random.choice(data['items'])['link'])
         await ctx.send(embed=embed)
     else:
         await ctx.send('No encontré resultados')
