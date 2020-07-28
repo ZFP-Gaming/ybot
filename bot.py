@@ -88,6 +88,8 @@ async def karma_ranking(ctx):
         2: '🥉'
     }
     for i in range(len(sorted)):
+        if 'karma' not in sorted[i]:
+            continue
         user = bot.get_user(sorted[i]["id"])
         formatted_counter = medals[i] if i in medals else '🏅'
         formatted_karma = str(sorted[i]['karma']).ljust(3, '\a')
