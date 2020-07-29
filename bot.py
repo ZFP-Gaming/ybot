@@ -4,6 +4,7 @@ import discord
 import requests
 import pdb # pdb.set_trace()
 import pymongo
+import wikipedia
 from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -31,6 +32,8 @@ db = MongoClient()
 members = db.bot.members
 uncles = db.bot.uncles
 actions = db.bot.actions
+wikipedia.set_lang("es")
+
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 
 def manage_karma(id, amount):
@@ -435,6 +438,18 @@ async def imdb(ctx, *, query):
         await ctx.send(embed=embed)
     else:
         await ctx.send('No encontré resultados')
+
+@bot.command()
+async def wiki(ctx, *, query):
+    page = wikipedia.page(query)
+    embed = discord.Embed(color=0x00ffe1)
+    data = page.summary
+    info = (data[:1000] + '...') if len(data) > 75 else data
+    embed.add_field(name=page.title, value=info, inline=False)
+    if page.images:
+        embed.set_thumbnail(url=page.images[0])
+    embed.add_field(name="Link", value=page.url, inline=False)
+    await ctx.send(embed=embed)
 
 print('CHORIZA ONLINE')
 
