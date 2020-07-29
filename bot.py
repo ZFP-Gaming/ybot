@@ -441,15 +441,18 @@ async def imdb(ctx, *, query):
 
 @bot.command()
 async def wiki(ctx, *, query):
-    page = wikipedia.page(query)
-    embed = discord.Embed(color=0x00ffe1)
-    data = page.summary
-    info = (data[:1000] + '...') if len(data) > 75 else data
-    embed.add_field(name=page.title, value=info, inline=False)
-    if page.images:
-        embed.set_thumbnail(url=page.images[0])
-    embed.add_field(name="Link", value=page.url, inline=False)
-    await ctx.send(embed=embed)
+    try:
+        page = wikipedia.page(query)
+        embed = discord.Embed(color=0x00ffe1)
+        data = page.summary
+        info = (data[:1000] + '...') if len(data) > 75 else data
+        embed.add_field(name=page.title, value=info, inline=False)
+        if page.images:
+            embed.set_thumbnail(url=page.images[1])
+        embed.add_field(name="Link", value=page.url, inline=False)
+        await ctx.send(embed=embed)
+    except:
+        await ctx.send('No encontré resultados')
 
 print('CHORIZA ONLINE')
 
