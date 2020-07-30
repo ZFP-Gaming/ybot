@@ -460,7 +460,7 @@ async def alarma(ctx, *, hora):
     local_time = float(hora)
     local_time = local_time * 60
     time.sleep(local_time)
-    recordatorio = 'Hola @zfp_luxo_3666' 
+    recordatorio = 'VAMOS CABROS DESPIERTEN!! ES HORA DE SACAR EL MILLONCITO!!'
 
     await ctx.send(recordatorio)
 
