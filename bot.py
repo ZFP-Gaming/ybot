@@ -5,6 +5,7 @@ import requests
 import pdb # pdb.set_trace()
 import pymongo
 import wikipedia
+import time
 from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -453,6 +454,15 @@ async def wiki(ctx, *, query):
         await ctx.send(embed=embed)
     except:
         await ctx.send('No encontré resultados')
+
+@bot.command()
+async def alarma(ctx, *, hora):
+    local_time = float(hora)
+    local_time = local_time * 60
+    time.sleep(local_time)
+    recordatorio = 'Hola @zfp_luxo_3666' 
+
+    await ctx.send(recordatorio)
 
 print('CHORIZA ONLINE')
 
