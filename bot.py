@@ -518,6 +518,17 @@ async def sad(ctx):
     else:
         await ctx.send('No estás conectado a un canal de audio')
 
+@bot.command(aliases=['s'])
+async def sound(ctx, effect):
+    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+    if not voice_client:
+        channel = ctx.message.author.voice.channel
+        await channel.connect()
+    if ctx.author.voice and ctx.voice_client:
+        player = ctx.voice_client.play(discord.FFmpegPCMAudio(f'sounds/{effect}.mp3'), after=lambda e: print(f'{effect}', e))
+    else:
+        await ctx.send('No estás conectado a un canal de audio')
+
 print('CHORIZA ONLINE')
 
 bot.run(TOKEN)
