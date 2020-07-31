@@ -10,6 +10,8 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime
+import os.path
+from os import path
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -520,14 +522,20 @@ async def sad(ctx):
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-    if not voice_client:
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
-    if ctx.author.voice and ctx.voice_client:
-        player = ctx.voice_client.play(discord.FFmpegPCMAudio(f'sounds/{effect}.mp3'), after=lambda e: print(f'{effect}', e))
-    else:
-        await ctx.send('No estás conectado a un canal de audio')
+    try:
+        if path.exists(f'sounds/{effect}.mp3'):
+            voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+            if not voice_client:
+                channel = ctx.message.author.voice.channel
+                await channel.connect()
+            if ctx.author.voice and ctx.voice_client:
+                player = ctx.voice_client.play(discord.FFmpegPCMAudio(f'sounds/{effect}.mp3'), after=lambda e: print(f'{effect}', e))
+            else:
+                await ctx.send('No estás conectado a un canal de audio')
+        else:
+            await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
+    except:
+        await ctx.send('Exploté 💣')
 
 print('CHORIZA ONLINE')
 
