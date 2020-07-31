@@ -507,7 +507,7 @@ async def horn(ctx):
     else:
         await ctx.send('No estás conectado a un canal de audio')
 
-@bot.command(aliases['violin'])
+@bot.command(aliases=['violin'])
 async def sad(ctx):
     voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
     if not voice_client:
