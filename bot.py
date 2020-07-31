@@ -476,50 +476,6 @@ async def leave(ctx):
     voice_client = ctx.guild.voice_client
     await voice_client.disconnect()
 
-@bot.command()
-async def oof(ctx):
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-    if not voice_client:
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
-    if ctx.author.voice and ctx.voice_client:
-        player = ctx.voice_client.play(discord.FFmpegPCMAudio('sounds/oof.mp3'), after=lambda e: print('oof', e))
-    else:
-        await ctx.send('No estás conectado a un canal de audio')
-
-@bot.command()
-async def nani(ctx):
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-    if not voice_client:
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
-    if ctx.author.voice and ctx.voice_client:
-        player = ctx.voice_client.play(discord.FFmpegPCMAudio('sounds/nani.mp3'), after=lambda e: print('nani', e))
-    else:
-        await ctx.send('No estás conectado a un canal de audio')
-
-@bot.command(aliases=['mlg', 'corneta'])
-async def horn(ctx):
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-    if not voice_client:
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
-    if ctx.author.voice and ctx.voice_client:
-        player = ctx.voice_client.play(discord.FFmpegPCMAudio('sounds/horn.mp3'), after=lambda e: print('horn', e))
-    else:
-        await ctx.send('No estás conectado a un canal de audio')
-
-@bot.command(aliases=['violin'])
-async def sad(ctx):
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-    if not voice_client:
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
-    if ctx.author.voice and ctx.voice_client:
-        player = ctx.voice_client.play(discord.FFmpegPCMAudio('sounds/sad.mp3'), after=lambda e: print('sad', e))
-    else:
-        await ctx.send('No estás conectado a un canal de audio')
-
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
     try:
