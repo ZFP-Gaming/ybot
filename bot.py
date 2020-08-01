@@ -6,12 +6,13 @@ import pdb # pdb.set_trace()
 import pymongo
 import wikipedia
 import time
+from os import path
+from os import listdir
+from os.path import isfile, join
 from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime
-import os.path
-from os import path
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -492,6 +493,16 @@ async def sound(ctx, effect):
             await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
     except:
         await ctx.send('Exploté 💣')
+
+@bot.command(name='sonidos')
+async def sound_list(ctx):
+    sounds = '```Lista de sonidos disponibles:\n'
+    files_path = f'{os.getcwd()}/sounds'
+    files_directory = os.listdir(files_path)
+    for file in sorted(files_directory):
+        sounds += f'- {file.split(".")[0]}\n'
+    sounds += '```'
+    await ctx.send(sounds)
 
 print('CHORIZA ONLINE')
 
