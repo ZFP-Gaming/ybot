@@ -33,6 +33,7 @@ IMDB_URL = os.getenv('IMDB_URL')
 IMDB_KEY = os.getenv('IMDB_KEY')
 
 db = MongoClient()
+frases = db.bot.frases
 members = db.bot.members
 uncles = db.bot.uncles
 actions = db.bot.actions
