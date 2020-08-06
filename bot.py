@@ -71,7 +71,22 @@ async def on_ready():
         'al Nete trabajando',
         'al Fabian cornerchopeando'
     ]
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=random.choice(viendo)))
+    actividad = [
+        '1',
+        '2'
+    ]
+    escuchar = [
+        'rock pesado',
+        'Bad Bunny',
+        'chinos cochinos',
+        'openings de animes',
+        'cumbia villera'
+    ]
+    elegir = random.choice(actividad)
+    if elegir == '1':
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=random.choice(viendo)))
+    else:
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=random.choice(escuchar)))
 
 @bot.event
 async def on_message(message):
