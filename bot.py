@@ -520,14 +520,14 @@ async def sound(ctx, effect):
 
 @bot.command(name='sonidos')
 async def sound_list(ctx):
-    sounds = 'Lista de sonidos disponibles:\n'
+    sounds = '```''Lista de sonidos disponibles:\n'
     files_path = f'{os.getcwd()}/sounds'
     files_directory = os.listdir(files_path)
     for file in sorted(files_directory):
         sounds += f'- {file.split(".")[0]}\n'
     sounds += '```'
     await ctx.send(sounds)
-    
+
 print('CHORIZA ONLINE')
 
 bot.run(TOKEN)
