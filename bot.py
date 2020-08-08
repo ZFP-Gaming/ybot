@@ -37,6 +37,7 @@ frases = db.bot.frases
 members = db.bot.members
 uncles = db.bot.uncles
 actions = db.bot.actions
+intros = db.bot.intros
 wikipedia.set_lang("es")
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
@@ -107,6 +108,18 @@ async def on_message(message):
             await message.channel.send(f'{message.mentions[0].name} tiene {value} puntos de karma')
     else:
         await bot.process_commands(message)
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    if before.channel is None and after.channel is not None and member.bot == False:
+        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+        if voice_client:
+            id = member.id
+            data = intros.find_one({'id': id})
+            if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
+                voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
+            else:
+                print(f'{member.name} no tiene un sonido registrado')
 
 @bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
@@ -520,13 +533,27 @@ async def sound(ctx, effect):
 
 @bot.command(name='sonidos')
 async def sound_list(ctx):
-    sounds = '```''Lista de sonidos disponibles:\n'
+    sounds = '```Lista de sonidos disponibles:\n'
     files_path = f'{os.getcwd()}/sounds'
     files_directory = os.listdir(files_path)
     for file in sorted(files_directory):
         sounds += f'- {file.split(".")[0]}\n'
     sounds += '```'
     await ctx.send(sounds)
+
+@bot.command()
+async def intro(ctx):
+    roles = [o.name for o in ctx.message.author.roles]
+    if '💻 dev' in roles:
+        id = ctx.message.mentions[0].id
+        effect = ctx.message.content.split(' ')[-1]
+        data = intros.find_one({'id': id})
+        if data:
+            intros.update_one({'id': id}, {'$set':{'effect' : effect}})
+        else:
+            intros.insert_one({'id': id, 'effect': effect})
+    else:
+        await ctx.send('https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif')
 
 print('CHORIZA ONLINE')
 
