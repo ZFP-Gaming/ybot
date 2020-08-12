@@ -113,7 +113,7 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     if before.channel is None and after.channel is not None and member.bot == False:
         voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-        if voice_client:
+        if voice_client and voice_client.channel == after.channel:
             id = member.id
             data = intros.find_one({'id': id})
             if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
