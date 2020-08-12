@@ -123,7 +123,18 @@ async def on_voice_state_update(member, before, after):
 
 @bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
-    sorted = list(members.find().sort('karma', pymongo.DESCENDING))
+    sorted_members = list(members.find().sort('karma', pymongo.DESCENDING))
+    filtered_members = []
+    for member in sorted_members:
+        if 'karma' not in member:
+            continue
+
+        user = bot.get_user(member['id'])
+        if not user.bot:
+            filtered_members.append({
+                'name': user.name,
+                'karma': member['karma']
+            })
     embed = discord.Embed(color=0xffffff)
     ranking = ''
     medals = {
@@ -131,16 +142,11 @@ async def karma_ranking(ctx):
         1: '🥈',
         2: '🥉'
     }
-    medals[len(sorted) - 1] = '💩'
-    for i in range(len(sorted)):
-        if 'karma' not in sorted[i]:
-            continue
-        user = bot.get_user(sorted[i]["id"])
-        if user.bot:
-            continue
+    medals[len(filtered_members) - 1] = '💩'
+    for i in range(len(filtered_members)):
         formatted_counter = medals[i] if i in medals else '🏅'
-        formatted_karma = str(int(sorted[i]['karma'])).rjust(3)
-        ranking = ranking + f'{formatted_counter} {user.name}: {formatted_karma}\n'
+        formatted_karma = str(int(filtered_members[i]['karma'])).rjust(3)
+        ranking = ranking + f'{formatted_counter} {filtered_members[i]["name"]}: {formatted_karma}\n'
     embed.add_field(name='Ranking de karma', value=ranking, inline=False)
     await ctx.send(embed=embed)
 
