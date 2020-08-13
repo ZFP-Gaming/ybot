@@ -512,13 +512,19 @@ async def alarma(ctx, *, hora):
 
 @bot.command()
 async def join(ctx):
-    channel = ctx.message.author.voice.channel
-    await channel.connect()
+    try:
+        channel = ctx.message.author.voice.channel
+        await channel.connect()
+    except:
+        print('Error al conectarse al canal de voz')
 
 @bot.command()
 async def leave(ctx):
-    voice_client = ctx.guild.voice_client
-    await voice_client.disconnect()
+    try:
+        voice_client = ctx.guild.voice_client
+        await voice_client.disconnect()
+    except:
+        print('Error al desconectarse del canal de voz')
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
