@@ -130,7 +130,7 @@ async def karma_ranking(ctx):
             continue
 
         user = bot.get_user(member['id'])
-        if not user.bot:
+        if user and not user.bot:
             filtered_members.append({
                 'name': user.name,
                 'karma': member['karma']
