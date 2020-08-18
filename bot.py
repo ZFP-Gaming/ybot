@@ -33,7 +33,7 @@ IMDB_URL = os.getenv('IMDB_URL')
 IMDB_KEY = os.getenv('IMDB_KEY')
 
 db = MongoClient()
-frases = db.bot.frases
+exp = db.bot.exp
 members = db.bot.members
 uncles = db.bot.uncles
 actions = db.bot.actions
@@ -491,8 +491,8 @@ async def alarma(ctx, *, hora):
 
     await ctx.send(recordatorio)
 
-@bot.command()
-async def join(ctx):
+@bot.command(aliases=['join'])
+async def join_channel(ctx):
     channel = ctx.message.author.voice.channel
     await channel.connect()
 
@@ -528,6 +528,19 @@ async def sound_list(ctx):
     sounds += '```'
     await ctx.send(sounds)
 
+@bot.command()
+async def king(ctx):
+    frase = [
+        'Maricones chupenme la raja con caca',
+        'Mysterion lo más grande',
+        'Tu conoces el sexo? Tu no conoces el sexo',
+        'Mi destino ya esta trazao y se llama éxito',
+        'Nunca hay chupao zorra',
+        'viska spilli fudbar',
+        'vilus spille memey?',
+        'obisnake'
+    ]    
+    await ctx.send(random.choice(frase))
 print('CHORIZA ONLINE')
 
 bot.run(TOKEN)
