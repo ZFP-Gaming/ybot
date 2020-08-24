@@ -111,15 +111,18 @@ async def on_message(message):
 
 @bot.event
 async def on_voice_state_update(member, before, after):
-    if before.channel is None and after.channel is not None and member.bot == False:
-        voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
-        if voice_client and voice_client.channel == after.channel:
-            id = member.id
-            data = intros.find_one({'id': id})
-            if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
-                voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
-            else:
-                print(f'{member.name} no tiene un sonido registrado')
+    try:
+        if before.channel is None and after.channel is not None and member.bot == False:
+            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+            if voice_client and voice_client.channel == after.channel:
+                id = member.id
+                data = intros.find_one({'id': id})
+                if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
+                    voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
+                else:
+                    print(f'{member.name} no tiene un sonido registrado')
+    except Exception as e:
+        print(e)
 
 @bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
@@ -540,7 +543,8 @@ async def sound(ctx, effect):
                 await ctx.send('No estás conectado a un canal de audio')
         else:
             await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
-    except:
+    except Exception as e:
+        print(e)
         await ctx.send('Exploté 💣')
 
 @bot.command(name='sonidos')
