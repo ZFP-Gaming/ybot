@@ -124,6 +124,20 @@ async def on_voice_state_update(member, before, after):
     except Exception as e:
         print(e)
 
+@bot.event
+async def on_reaction_add(reaction, member):
+    user = reaction.message.author.id
+    author = member.id
+    modifier = 1 if reaction.emoji == '➕' else 0
+    if modifier != 0 and user != author:
+        minutes = last_interaction(author, user)
+        if minutes < KARMA_COOLDOWN:
+            print(f'On cooldown: {member.name} -> {reaction.message.author.name}')
+        else:
+            value = manage_karma(user, modifier)
+            actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()}, upsert=True)
+            print(f'{member.name} reacted on {reaction.message.author.name} ++')
+
 @bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
     sorted_members = list(members.find().sort('karma', pymongo.DESCENDING))
@@ -568,10 +582,10 @@ async def king(ctx):
         'viska spilli fudbar',
         'vilus spille memey?',
         'obisnake'
-    ]    
+    ]
     await ctx.send(random.choice(frase))
 
-@bot.command()   
+@bot.command()
 async def intro(ctx):
     roles = [o.name for o in ctx.message.author.roles]
     if '💻 dev' in roles:
