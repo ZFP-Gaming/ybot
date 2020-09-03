@@ -1,6 +1,7 @@
 import os
 import random
 import discord
+import json
 import requests
 import pdb # pdb.set_trace()
 import pymongo
@@ -31,6 +32,9 @@ EXCHANGE_URL = os.getenv('EXCHANGE_URL')
 UTM_URL = os.getenv('UTM_URL')
 IMDB_URL = os.getenv('IMDB_URL')
 IMDB_KEY = os.getenv('IMDB_KEY')
+LOL_URL = os.getenv('LOL_URL')
+LOL_APIKEY = os.getenv('LOL_APIKEY')
+CHAMP_URL = os.getenv('CHAMP_URL')
 
 db = MongoClient()
 exp = db.bot.exp
@@ -598,6 +602,36 @@ async def intro(ctx):
             intros.insert_one({'id': id, 'effect': effect})
     else:
         await ctx.send('https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif')
+
+@bot.command()
+async def lol(ctx, *, usuario):
+    f = open('champions.json',"r",encoding='utf-8')
+    data = json.load(f)
+    req = requests.get(url = f'{LOL_URL}{usuario}{LOL_APIKEY}')
+    response = req.json()
+    id = response['id']
+    nombre = response['name']
+    lvl = response['summonerLevel']
+    req = requests.get(url = f'{CHAMP_URL}{id}{LOL_APIKEY}')
+    champ = req.json()
+    campeon = champ[0]['championId']
+    puntos = champ[0]['championPoints']
+     
+    found = next(item for item in data if int(item['key']) == campeon)
+    id_champ = int(found['key'])
+    if id_champ == campeon:
+        nombre_champ = found['name']
+
+    embed = discord.Embed(
+        colour = discord.Colour.blue()
+    )
+
+    embed.add_field(name=('Nombre'), value=nombre, inline=True)
+    embed.add_field(name=('Nivel'), value=lvl, inline=False)
+    embed.add_field(name=('Campeón Main'), value=nombre_champ, inline=False)
+    embed.add_field(name=('Puntos de Maestría'), value=puntos, inline=False)
+
+    await ctx.send(embed=embed)
 
 print('CHORIZA ONLINE')
 
