@@ -35,8 +35,9 @@ IMDB_KEY = os.getenv('IMDB_KEY')
 LOL_URL = os.getenv('LOL_URL')
 LOL_APIKEY = os.getenv('LOL_APIKEY')
 CHAMP_URL = os.getenv('CHAMP_URL')
+MONGO_URL = os.getenv('MONGO_URL')
 
-db = MongoClient()
+db = MongoClient(MONGO_URL)
 exp = db.bot.exp
 members = db.bot.members
 uncles = db.bot.uncles

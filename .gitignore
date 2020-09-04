@@ -1,2 +1,4 @@
 bot-env/
 *.env
+
+tmp/mongodb_data/
