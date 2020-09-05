@@ -36,6 +36,7 @@ LOL_URL = os.getenv('LOL_URL')
 LOL_APIKEY = os.getenv('LOL_APIKEY')
 CHAMP_URL = os.getenv('CHAMP_URL')
 MONGO_URL = os.getenv('MONGO_URL')
+DDRAGON_URL = os.getenv('DDRAGON_URL')
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -616,8 +617,8 @@ async def lol(ctx, *, usuario):
     req = requests.get(url = f'{CHAMP_URL}{id}{LOL_APIKEY}')
     champ = req.json()
     campeon = champ[0]['championId']
-    puntos = champ[0]['championPoints']
-     
+    mastery_points = champ[0]['championPoints']
+    formatted_points = '{0:,}'.format(mastery_points).replace(",", ".")
     found = next(item for item in data if int(item['key']) == campeon)
     id_champ = int(found['key'])
     if id_champ == campeon:
@@ -627,10 +628,11 @@ async def lol(ctx, *, usuario):
         colour = discord.Colour.blue()
     )
 
-    embed.add_field(name=('Nombre'), value=nombre, inline=True)
+    embed.set_thumbnail(url=f'{DDRAGON_URL}{nombre_champ}_0.jpg')
+    embed.add_field(name=('Nombre'), value=nombre, inline=False)
     embed.add_field(name=('Nivel'), value=lvl, inline=False)
-    embed.add_field(name=('Campeón Main'), value=nombre_champ, inline=False)
-    embed.add_field(name=('Puntos de Maestría'), value=puntos, inline=False)
+    embed.add_field(name=('Main'), value=nombre_champ, inline=True)
+    embed.add_field(name=('Puntos de maestría'), value=formatted_points, inline=True)
 
     await ctx.send(embed=embed)
 
