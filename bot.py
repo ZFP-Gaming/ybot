@@ -25,6 +25,8 @@ ANIME_URL = os.getenv('ANIME_URL')
 INUTIL_URL = os.getenv('INUTIL_URL')
 GSE_KEY = os.getenv('GSE_KEY')
 GSE_ID = os.getenv('GSE_ID')
+GSE_ID_NSFW = os.getenv('GSE_ID_NSFW')
+GSE_KEY_NSFW = os.getenv('GSE_KEY_NSFW')
 SEARCH_URL = os.getenv('SEARCH_URL')
 YOUTUBE_URL = os.getenv('YOUTUBE_URL')
 EXCHANGE_APP_ID = os.getenv('EXCHANGE_APP_ID')
@@ -44,6 +46,7 @@ members = db.bot.members
 uncles = db.bot.uncles
 actions = db.bot.actions
 intros = db.bot.intros
+settings = db.bot.settings
 wikipedia.set_lang("es")
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
@@ -354,13 +357,21 @@ async def quien(ctx):
 
 @bot.command(aliases=['fotos', 'foto', 'img'])
 async def image(ctx, *, query):
+    setting = settings.find_one({'name': 'mode'})
+    cx = GSE_ID
+    key = GSE_KEY
+    safe = 'high'
+    if setting and setting['value'] == 'nsfw':
+        cx = GSE_ID_NSFW
+        key = GSE_KEY_NSFW
+        safe = 'off'
     params = {
         'q': query,
         'searchType': 'image',
-        'safe': 'high',
+        'safe': safe,
         'fields': 'items(link)',
-        'cx': GSE_ID,
-        'key': GSE_KEY
+        'cx': cx,
+        'key': key
     }
     data = requests.get(SEARCH_URL, params=params).json()
     if 'items' in data and len(data['items']) > 0:
@@ -635,6 +646,24 @@ async def lol(ctx, *, usuario):
     embed.add_field(name=('Puntos de maestría'), value=formatted_points, inline=True)
 
     await ctx.send(embed=embed)
+
+@bot.command(name='modo')
+async def mode(ctx, name):
+    roles = [o.name for o in ctx.message.author.roles]
+    if '💻 dev' in roles:
+        setting = settings.find_one({'name': 'mode'})
+        if setting:
+            if name in ['diablo', 'sexo']:
+                settings.update_one({'name': 'mode'}, {'$set': {'value': 'nsfw'}})
+                await ctx.message.add_reaction('😈')
+            else:
+                settings.update_one({'name': 'mode'}, {'$set': {'value': 'safe'}})
+                await ctx.message.add_reaction('😇')
+        else:
+            settings.insert_one({'name': 'mode', 'value': 'safe'})
+            await ctx.message.add_reaction('😇')
+    else:
+        await ctx.send('https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif')
 
 print('CHORIZA ONLINE')
 
