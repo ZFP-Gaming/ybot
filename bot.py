@@ -137,7 +137,7 @@ async def on_voice_state_update(member, before, after):
 async def on_reaction_add(reaction, member):
     user = reaction.message.author.id
     author = member.id
-    modifier = 1 if reaction.emoji == '➕' else 0
+    modifier = 1 if reaction.emoji in ['➕', '💯', '⬆️', '😂'] else 0
     if modifier != 0 and user != author:
         minutes = last_interaction(author, user)
         if minutes < KARMA_COOLDOWN:
