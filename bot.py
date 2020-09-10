@@ -131,6 +131,8 @@ async def on_voice_state_update(member, before, after):
                     voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
+    except Exception as e:
+        print(e)
 
 @bot.event
 async def on_reaction_add(reaction, member):
