@@ -74,19 +74,19 @@ def last_interaction(author, user):
 @bot.event
 async def on_ready():
     viendo = [
-        'manquear al Dario',
-        'al numero 1 del cba',
+        'manquear al Darío',
+        'al número 1 del cba',
         'porno de enanos',
         'a la Coty haciendo origami',
         'al Nete trabajando',
-        'al Fabian cornerchopeando'
+        'al Fabián cornerchopeando'
     ]
     actividad = [
         '1',
         '2'
     ]
     escuchar = [
-        'rock pesado',
+        'Rock pesado lml',
         'Bad Bunny',
         'chinos cochinos',
         'openings de animes',
@@ -100,10 +100,11 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if ('++' in message.content or '--' in message.content) and message.mentions:
+    msg = message.content.split(' ')
+    if ('++' in msg or '--' in msg) and message.mentions:
         user = message.mentions[0].id
         author = message.author.id
-        modifier = 1 if '++' in message.content else - 1
+        modifier = 1 if '++' in msg else - 1
         minutes = last_interaction(author, user)
         if modifier > 0 and user == author:
             await message.channel.send('No seai fresco, -- por pao')
