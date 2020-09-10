@@ -669,6 +669,13 @@ async def mode(ctx, name):
     else:
         await ctx.send('https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif')
 
+@bot.command()
+async def pokimon(ctx):
+    base = random.randint(1, 151)
+    face = random.randint(1, 151) 
+    url = f'https://images.alexonsager.net/pokemon/fused/{base}/{base}.{face}.png'
+    await ctx.send(url)
+
 print('CHORIZA ONLINE')
 
 bot.run(TOKEN)
