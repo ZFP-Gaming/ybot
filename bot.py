@@ -101,10 +101,10 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     msg = message.content.split(' ')
-    if ('++' in msg or '--' in msg) and message.mentions:
+    if ('++' in msg  or '--' in msg  ) and message.mentions:
         user = message.mentions[0].id
         author = message.author.id
-        modifier = 1 if '++' in msg else - 1
+        modifier = 1 if '++' in msg  else - 1
         minutes = last_interaction(author, user)
         if modifier > 0 and user == author:
             await message.channel.send('No seai fresco, -- por pao')
@@ -131,22 +131,23 @@ async def on_voice_state_update(member, before, after):
                     voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
-    except Exception as e:
-        print(e)
 
 @bot.event
 async def on_reaction_add(reaction, member):
-    user = reaction.message.author.id
-    author = member.id
-    modifier = 1 if reaction.emoji in ['➕', '💯', '⬆️', '😂'] else 0
-    if modifier != 0 and user != author:
-        minutes = last_interaction(author, user)
-        if minutes < KARMA_COOLDOWN:
-            print(f'On cooldown: {member.name} -> {reaction.message.author.name}')
-        else:
-            value = manage_karma(user, modifier)
-            actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()}, upsert=True)
-            print(f'{member.name} reacted on {reaction.message.author.name} ++')
+    try:
+        user = reaction.message.author.id
+        author = member.id
+        modifier = 1 if reaction.emoji in ['➕', '💯', '⬆️', '😂', '😆', '👍'] else 0
+        if modifier != 0 and user != author:
+            minutes = last_interaction(author, user)
+            if minutes < KARMA_COOLDOWN:
+                print(f'On cooldown: {member.name} -> {reaction.message.author.name}')
+            else:
+                value = manage_karma(user, modifier)
+                actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()}, upsert=True)
+                print(f'{member.name} reacted on {reaction.message.author.name} ++')
+    except Exception as e:
+        print(e)
 
 @bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
