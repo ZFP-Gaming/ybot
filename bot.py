@@ -7,6 +7,7 @@ import pdb # pdb.set_trace()
 import pymongo
 import wikipedia
 import time
+import youtube_dl
 from os import path
 from os import listdir
 from os.path import isfile, join
@@ -39,6 +40,7 @@ LOL_APIKEY = os.getenv('LOL_APIKEY')
 CHAMP_URL = os.getenv('CHAMP_URL')
 MONGO_URL = os.getenv('MONGO_URL')
 DDRAGON_URL = os.getenv('DDRAGON_URL')
+ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -50,6 +52,8 @@ settings = db.bot.settings
 wikipedia.set_lang("es")
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
+
+queue = []
 
 def manage_karma(id, amount):
     member = members.find_one({'id': id})
@@ -70,6 +74,25 @@ def last_interaction(author, user):
         return round(diff.seconds / 60)
     else:
         return 100
+
+def check_queue(voice_client):
+    if queue != []:
+        sound_effect = queue.pop(0)
+        voice_client.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(voice_client))
+
+def youtube_search(query):
+    params = {
+        'q': query,
+        'key': GSE_KEY,
+        'part': 'id',
+        'type': 'video',
+        'order': 'relevance',
+        'maxResults': 15
+    }
+    data = requests.get(YOUTUBE_URL, params=params).json()
+    if 'items' in data and len(data['items']) > 0:
+        video_id = data['items'][0]['id']['videoId']
+        return f'https://youtu.be/{video_id}'
 
 @bot.event
 async def on_ready():
@@ -408,19 +431,9 @@ async def gif(ctx, *, query):
 
 @bot.command(aliases=['yt', 'yutu'])
 async def youtube(ctx, *, query):
-    params = {
-        'q': query,
-        'key': GSE_KEY,
-        'part': 'id',
-        'type': 'video',
-        'order': 'relevance',
-        'maxResults': 15
-    }
-    data = requests.get(YOUTUBE_URL, params=params).json()
-    if 'items' in data and len(data['items']) > 0:
-        video_id = data['items'][0]['id']['videoId']
-        await ctx.send(f'https://youtu.be/{video_id}')
-        embed = discord.Embed(color=0x00ff2a)
+    video_url = youtube_search(query)
+    if video_url:
+        await ctx.send(video_url)
     else:
         await ctx.send('No encontré resultados')
 
@@ -548,12 +561,71 @@ async def alarma(ctx, *, hora):
 
     await ctx.send(recordatorio)
 
+@bot.command()
+async def play(ctx, *, query):
+    id = ctx.message.author.id
+    data = members.find_one({'id': id})
+    roles = [o.name for o in ctx.message.author.roles]
+    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+    if ('💻 dev' in roles) or ('DJ' in roles and data['karma'] > 10):
+        if not voice_client:
+            channel = ctx.message.author.voice.channel
+            await channel.connect()
+        if ctx.author.voice and ctx.voice_client:
+            url = youtube_search(query)
+            if url:
+                song_there = os.path.isfile("song.mp3")
+                try:
+                    if song_there:
+                        os.remove("song.mp3")
+                        print("Removed old song file")
+                except PermissionError:
+                    print("Trying to delete song file, but it's being played")
+                    return
+
+                ydl_opts = {
+                    'format': 'bestaudio/best',
+                    'quiet': True,
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                        'preferredquality': '192',
+                    }],
+                }
+                try:
+                    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                        print("Downloading audio now\n")
+                        ydl.download([url])
+                except:
+                    print('Error in song download')
+
+                for file in os.listdir("./"):
+                    if file.endswith(".mp3"):
+                        name = file
+                        print(f"Renamed File: {file}\n")
+                        os.rename(file, "song.mp3")
+
+                vc = ctx.voice_client
+                if not vc.is_playing():
+                    vc.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda x: check_queue(vc))
+                    vc.source = discord.PCMVolumeTransformer(vc.source)
+                    vc.source.volume = 0.07
+                    await ctx.send(f'Playing {url}')
+                else:
+                    print(f'Added to queue: {sound_effect}')
+                    queue.append(sound_effect)
+            else:
+                await ctx.send('No encontré resultados')
+    else:
+        await ctx.send(ACCESS_DENIED)
+
 @bot.command(aliases = ['join'])
 async def join_channel(ctx):
     try:
         channel = ctx.message.author.voice.channel
         await channel.connect()
-    except:
+    except Exception as e:
+        print(e)
         print('Error al conectarse al canal de voz')
 
 @bot.command()
@@ -561,19 +633,27 @@ async def leave(ctx):
     try:
         voice_client = ctx.guild.voice_client
         await voice_client.disconnect()
-    except:
+    except Exception as e:
+        print(e)
         print('Error al desconectarse del canal de voz')
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
+    sound_effect = f'sounds/{effect}.mp3'
     try:
-        if path.exists(f'sounds/{effect}.mp3'):
+        if path.exists(sound_effect):
             voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
             if not voice_client:
                 channel = ctx.message.author.voice.channel
                 await channel.connect()
             if ctx.author.voice and ctx.voice_client:
-                player = ctx.voice_client.play(discord.FFmpegPCMAudio(f'sounds/{effect}.mp3'), after=lambda e: print(f'{effect}', e))
+                vc = ctx.voice_client
+                if not vc.is_playing():
+                    print('Empty queue, playing...')
+                    vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
+                else:
+                    print(f'Added to queue: {sound_effect}')
+                    queue.append(sound_effect)
             else:
                 await ctx.send('No estás conectado a un canal de audio')
         else:
@@ -618,7 +698,7 @@ async def intro(ctx):
         else:
             intros.insert_one({'id': id, 'effect': effect})
     else:
-        await ctx.send('https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif')
+        await ctx.send(ACCESS_DENIED)
 
 @bot.command()
 async def lol(ctx, *, usuario):
@@ -667,12 +747,12 @@ async def mode(ctx, name):
             settings.insert_one({'name': 'mode', 'value': 'safe'})
             await ctx.message.add_reaction('😇')
     else:
-        await ctx.send('https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif')
+        await ctx.send(ACCESS_DENIED)
 
 @bot.command()
 async def pokimon(ctx):
     base = random.randint(1, 151)
-    face = random.randint(1, 151) 
+    face = random.randint(1, 151)
     url = f'https://images.alexonsager.net/pokemon/fused/{base}/{base}.{face}.png'
     await ctx.send(url)
 

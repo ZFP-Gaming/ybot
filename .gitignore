@@ -2,3 +2,5 @@ bot-env/
 *.env
 
 tmp/mongodb_data/
+
+*.mp3
