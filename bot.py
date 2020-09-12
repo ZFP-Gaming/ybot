@@ -210,7 +210,7 @@ async def karma_ranking(ctx):
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send('pong')
+    await ctx.send(f'pong {int(bot.latency * 1000)}ms')
 
 @bot.command(name='random')
 async def random_choice(ctx, options):
