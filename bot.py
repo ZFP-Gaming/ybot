@@ -8,6 +8,8 @@ import pymongo
 import wikipedia
 import time
 import youtube_dl
+import validators
+
 from os import path
 from os import listdir
 from os.path import isfile, join
@@ -89,6 +91,9 @@ def youtube_search(query):
         'order': 'relevance',
         'maxResults': 15
     }
+
+    print(f'Searching: {query}')
+
     data = requests.get(YOUTUBE_URL, params=params).json()
     if 'items' in data and len(data['items']) > 0:
         video_id = data['items'][0]['id']['videoId']
@@ -572,7 +577,7 @@ async def play(ctx, *, query):
             channel = ctx.message.author.voice.channel
             await channel.connect()
         if ctx.author.voice and ctx.voice_client:
-            url = youtube_search(query)
+            url = query if validators.url(query) else youtube_search(query)
             if url:
                 song_there = os.path.isfile("song.mp3")
                 try:
@@ -610,10 +615,7 @@ async def play(ctx, *, query):
                     vc.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda x: check_queue(vc))
                     vc.source = discord.PCMVolumeTransformer(vc.source)
                     vc.source.volume = 0.07
-                    await ctx.send(f'Playing {url}')
-                else:
-                    print(f'Added to queue: {sound_effect}')
-                    queue.append(sound_effect)
+                    await ctx.send(f'Reproduciendo {url}')
             else:
                 await ctx.send('No encontré resultados')
     else:
@@ -636,6 +638,19 @@ async def leave(ctx):
     except Exception as e:
         print(e)
         print('Error al desconectarse del canal de voz')
+
+@bot.command()
+async def stop(ctx):
+    id = ctx.message.author.id
+    data = members.find_one({'id': id})
+    roles = [o.name for o in ctx.message.author.roles]
+    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+    if ('💻 dev' in roles) or ('DJ' in roles and data['karma'] > 10):
+        if ctx.author.voice and ctx.voice_client:
+            vc = ctx.voice_client
+            if vc.is_playing():
+                queue = []
+                vc.stop()
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
