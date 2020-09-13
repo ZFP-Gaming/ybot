@@ -9,6 +9,8 @@ import wikipedia
 import time
 import youtube_dl
 import validators
+import urllib.request
+import shutil
 
 from os import path
 from os import listdir
@@ -770,6 +772,22 @@ async def pokimon(ctx):
     face = random.randint(1, 151)
     url = f'https://images.alexonsager.net/pokemon/fused/{base}/{base}.{face}.png'
     await ctx.send(url)
+
+@bot.command()
+async def add(ctx):
+    roles = [o.name for o in ctx.message.author.roles]
+    if '💻 dev' in roles:
+        url = ctx.message.attachments[0].url
+        print(url)
+        filename = url.split('/')[-1]
+        opener=urllib.request.build_opener()
+        opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
+        urllib.request.install_opener(opener)
+        urllib.request.urlretrieve(url, filename)
+        shutil.move(filename, 'sounds')
+    else:
+        await ctx.send(ACCESS_DENIED)
+
 
 print('CHORIZA ONLINE')
 
