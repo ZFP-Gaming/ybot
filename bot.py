@@ -44,6 +44,7 @@ LOL_APIKEY = os.getenv('LOL_APIKEY')
 CHAMP_URL = os.getenv('CHAMP_URL')
 MONGO_URL = os.getenv('MONGO_URL')
 DDRAGON_URL = os.getenv('DDRAGON_URL')
+SISMOS_URL = os.getenv('SISMOS_URL')
 ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
 
 db = MongoClient(MONGO_URL)
@@ -788,6 +789,16 @@ async def add(ctx):
     else:
         await ctx.send(ACCESS_DENIED)
 
+@bot.command()
+async def sismo(ctx):
+    req = requests.get(url = SISMOS_URL)
+    response = req.json()
+    referencia1 = response['ultimos_sismos_chile'][0]['reference']
+    hora1 = response['ultimos_sismos_chile'][0]['chilean_time']
+    magnitud1 = response['ultimos_sismos_chile'][0]['magnitude']
+    profundidad1 = response['ultimos_sismos_chile'][0]['depth']
+
+    await ctx.send(f'Lugar: {referencia1}\nHora: {hora1}\nMagnitud: {magnitud1}\nProfundidad: {profundidad1}')
 
 print('CHORIZA ONLINE')
 
