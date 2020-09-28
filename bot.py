@@ -45,6 +45,9 @@ CHAMP_URL = os.getenv('CHAMP_URL')
 MONGO_URL = os.getenv('MONGO_URL')
 DDRAGON_URL = os.getenv('DDRAGON_URL')
 SISMOS_URL = os.getenv('SISMOS_URL')
+UNTAPPD_URL = os.getenv('UNTAPPD_URL')
+UNTAPPD_ID = os.getenv('UNTAPPD_ID')
+UNTAPPD_SECRET = os.getenv('UNTAPPD_SECRET')
 ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
 
 db = MongoClient(MONGO_URL)
@@ -802,4 +805,29 @@ async def sismo(ctx):
 
 print('CHORIZA ONLINE')
 
+@bot.command(aliases=['pilsen', 'chela', 'xela', 'untappd'])
+async def beer(ctx, *, query):
+    url = f'{UNTAPPD_URL}search/beer?q={query}&client_secret={UNTAPPD_SECRET}&client_id={UNTAPPD_ID}'
+    data = requests.get(url).json()
+    if data['response']['beers']['count'] == 0:
+        await ctx.send('No encontré resultados')
+    else:
+        beer = data['response']['beers']['items'][0]['beer']
+        bid = beer['bid']
+        ibu = beer['beer_ibu'] if beer['beer_ibu'] != 0 else '❓'
+        brewery = data['response']['beers']['items'][0]['brewery']
+        info_url = f'{UNTAPPD_URL}beer/info/{bid}?client_secret={UNTAPPD_SECRET}&client_id={UNTAPPD_ID}&compact=true'
+        info = requests.get(info_url).json()
+        rating = round(info['response']['beer']['rating_score'], 2)
+        embed = discord.Embed(color=0xffe229)
+        if 'brewery_label' in brewery:
+            embed.set_thumbnail(url=brewery['brewery_label'])
+        embed.add_field(name="Nombre", value=beer['beer_name'], inline=False)
+        embed.add_field(name="Cervecería", value=brewery['brewery_name'], inline=False)
+        embed.add_field(name="⭐️", value=rating, inline=False)
+        embed.add_field(name="País", value=brewery['country_name'], inline=False)
+        embed.add_field(name="Graduación alcohólica", value=beer['beer_abv'], inline=False)
+        embed.add_field(name="IBU", value=ibu, inline=False)
+        embed.add_field(name="Estilo", value=beer['beer_style'], inline=False)
+        await ctx.send(embed=embed)
 bot.run(TOKEN)
