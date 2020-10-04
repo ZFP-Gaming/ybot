@@ -11,6 +11,7 @@ import youtube_dl
 import validators
 import urllib.request
 import shutil
+import praw
 
 from os import path
 from os import listdir
@@ -48,6 +49,8 @@ SISMOS_URL = os.getenv('SISMOS_URL')
 UNTAPPD_URL = os.getenv('UNTAPPD_URL')
 UNTAPPD_ID = os.getenv('UNTAPPD_ID')
 UNTAPPD_SECRET = os.getenv('UNTAPPD_SECRET')
+REDDIT_ID = os.getenv('REDDIT_ID')
+REDDIT_SECRET = os.getenv('REDDIT_SECRET')
 ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
 
 db = MongoClient(MONGO_URL)
@@ -60,6 +63,12 @@ settings = db.bot.settings
 wikipedia.set_lang("es")
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
+
+reddit = praw.Reddit(
+    client_id=REDDIT_ID,
+    client_secret=REDDIT_SECRET,
+    user_agent="ybot"
+)
 
 queue = []
 
@@ -803,7 +812,7 @@ async def sismo(ctx):
 
     await ctx.send(f'Lugar: {referencia1}\nHora: {hora1}\nMagnitud: {magnitud1}\nProfundidad: {profundidad1}')
 
-print('CHORIZA ONLINE')
+
 
 @bot.command(aliases=['pilsen', 'chela', 'xela', 'untappd'])
 async def beer(ctx, *, query):
@@ -830,4 +839,22 @@ async def beer(ctx, *, query):
         embed.add_field(name="IBU", value=ibu, inline=False)
         embed.add_field(name="Estilo", value=beer['beer_style'], inline=False)
         await ctx.send(embed=embed)
+
+@bot.command()
+async def item(ctx):
+    subreddit = reddit.subreddit("ItemShop")
+    posts = subreddit.hot(limit=30)
+    items = []
+    for post in posts:
+        if post.url.endswith('.jpg'):
+            items.append(post)
+    if items:
+        item = random.choice(items)
+        embed=discord.Embed(title=item.title)
+        embed.set_image(url=item.url)
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send('No encontré resultados')
+
+print('CHORIZA ONLINE')
 bot.run(TOKEN)
