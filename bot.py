@@ -884,7 +884,7 @@ async def monedas(ctx):
     id = ctx.message.author.id
     data = inv.find_one({'id':id})
     moneda = random.randint(1,4)
-    if ctx.message.channel.name == 'bot-qa':
+    if ctx.message.channel.name == 'farmeo':
         if data:
             if 'monedas' in data:
                 nueva_moneda = data['monedas'] + moneda
