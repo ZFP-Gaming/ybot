@@ -57,6 +57,8 @@ db = MongoClient(MONGO_URL)
 exp = db.bot.exp
 members = db.bot.members
 uncles = db.bot.uncles
+inv = db.bot.inv
+objetos = db.bot.objetos
 actions = db.bot.actions
 intros = db.bot.intros
 settings = db.bot.settings
@@ -855,6 +857,71 @@ async def item(ctx):
         await ctx.send(embed=embed)
     else:
         await ctx.send('No encontré resultados')
+
+@bot.command()
+async def clase(ctx):
+    await ctx.send('Puedes elegir tu clase con el comando "y elegir".\n1. Guerrero\n2. Arquero\n3. Huaso')
+
+@bot.command()
+async def elegir(ctx, clase):
+    id = ctx.message.author.id
+    data = inv.find_one({'id':id})
+    if data:
+        await ctx.send('Ya tienes un personaje creado. Si quieres empezar uno nuevo, elimina tu personaje con el comando "y eliminar".')
+    else:
+        if clase.lower() == 'guerrero':
+            inv.insert_one({'id':id, 'cabeza':'yelmo nivel 1', 'cuerpo':'peto de malla nivel 1',  'manos':'brazales nivel 1', 'piernas':'grebas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'espada de madera', 'arma secundaria':'escudo de madera'})
+            await ctx.send(f'Felicidades! Ya eres un Guerrero.\nSe agregó a tu inventario lo siguiente:\n-Yelmo nivel 1\n-Peto de malla nivel 1\n-Brazales nivel 1\n-Grebas nivel 1\n-Botas nivel 1\n-Espada de madera\n-Escudo de madera')
+        if clase.lower() == 'arquero':
+            inv.insert_one({'id':id, 'cabeza':'capucha nivel 1', 'cuerpo':'peto de cuero nivel 1',  'manos':'guantes nivel 1', 'piernas':'piernas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'arco nivel 1', 'arma secundaria':'carcaj nivel 1'})
+            await ctx.send(f'Felicidades! Ya eres un Arquero.\nSe agregó a tu inventario lo siguiente:\n-Capucha nivel 1\n-Peto de cuero nivel 1\n-Guantes nivel 1\n-Piernas nivel 1\n-Botas nivel 1\n-Arco nivel 1\n-Carcaj nivel 1')
+        if clase.lower() == 'huaso':
+            inv.insert_one({'id':id, 'cabeza':'chupalla nivel 1', 'cuerpo':'manta de huaso nivel 1', 'manos':'pañuelo nivel 1', 'piernas':'pantalones de huaso nivel 1', 'pies':'botas de huaso nivel 1', 'arma primaria':'empanada', 'arma secundaria':'anticucho'})
+            await ctx.send(f'Felicidades! Ya eres un Huaso.\nSe agrego a tu inventario lo siguiente:\n-Chupalla nivel 1\n-Manta de huaso nivel 1\n-Pañuelo nivel 1\n-Pantalones de huaso nivel 1\n-Botas de huaso nivel 1\n-Empanada\n-Anticucho')
+
+@bot.command()
+async def monedas(ctx):
+    id = ctx.message.author.id
+    data = inv.find_one({'id':id})
+    moneda = random.randint(1,4)
+    if ctx.message.channel.name == 'bot-qa':
+        if data:
+            if 'monedas' in data:
+                nueva_moneda = data['monedas'] + moneda
+                inv.update_one({'id':id}, {'$set': {'monedas':nueva_moneda}})
+                moneda = nueva_moneda
+            else:
+                inv.update_one({'id':id}, {'$set': {'monedas':moneda}})
+        else:
+            inv.insert_one({'id':id, 'monedas':moneda})
+        await ctx.send(f'Tienes {moneda} monedas en tu inventario')
+    else:
+        await ctx.send('No estas en el canal de farmeo. Vira de aqui larva')
+
+@bot.command()
+async def eliminar(ctx):
+    id = ctx.message.author.id
+    inv.delete_one({'id':id})
+
+    await ctx.send('Tu personaje ha sido eliminado del mundo ZFP.')
+
+objetos.remove()
+objetos.insert_one({'nombre':'espada nivel 1', 'daño':5, 'elemento':'neutro'})
+objetos.insert_one({'nombre':'arco', 'daño':6, 'elemento':'neutro'})
+objetos.insert_one({'nombre':'escudo de madera', 'defensa':3, 'resistencia':'neutro'})
+objetos.insert_one({'nombre':'carcaj', 'daño':2, 'elemento':'neutro'})
+
+@bot.command()
+async def arma(ctx, *, nombre):
+    data = objetos.find_one({'nombre':nombre})
+    #await ctx.send(f'Daño: {data["daño"]}\nElemento: {data["elemento"]}')
+    await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
+
+@bot.command()
+async def armadura(ctx, *, nombre):
+    data = objetos.find_one({'nombre':nombre})
+    #await ctx.send(f'Defensa: {data["defensa"]}\nResistencia: {data["resistencia"]}')
+    await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
