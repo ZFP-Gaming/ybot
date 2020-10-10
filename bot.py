@@ -20,6 +20,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime
+from discord.ext import commands
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -880,10 +881,11 @@ async def elegir(ctx, clase):
             await ctx.send(f'Felicidades! Ya eres un Huaso.\nSe agrego a tu inventario lo siguiente:\n-Chupalla nivel 1\n-Manta de huaso nivel 1\n-Pañuelo nivel 1\n-Pantalones de huaso nivel 1\n-Botas de huaso nivel 1\n-Empanada\n-Anticucho')
 
 @bot.command()
+@commands.cooldown(1, 300, commands.BucketType.user)
 async def monedas(ctx):
     id = ctx.message.author.id
     data = inv.find_one({'id':id})
-    moneda = random.randint(1,4)
+    moneda = random.randint(1,3)
     if ctx.message.channel.name == 'farmeo':
         if data:
             if 'monedas' in data:
