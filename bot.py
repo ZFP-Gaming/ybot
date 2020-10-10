@@ -846,7 +846,23 @@ async def beer(ctx, *, query):
 @bot.command()
 async def item(ctx):
     subreddit = reddit.subreddit("ItemShop")
-    posts = subreddit.hot(limit=30)
+    posts = subreddit.hot(limit=50)
+    items = []
+    for post in posts:
+        if post.url.endswith('.jpg'):
+            items.append(post)
+    if items:
+        item = random.choice(items)
+        embed=discord.Embed(title=item.title)
+        embed.set_image(url=item.url)
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send('No encontré resultados')
+
+@bot.command()
+async def boss(ctx):
+    subreddit = reddit.subreddit("Bossfight")
+    posts = subreddit.hot(limit=50)
     items = []
     for post in posts:
         if post.url.endswith('.jpg'):
