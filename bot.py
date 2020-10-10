@@ -887,14 +887,23 @@ async def elegir(ctx, clase):
         await ctx.send('Ya tienes un personaje creado. Si quieres empezar uno nuevo, elimina tu personaje con el comando "y eliminar".')
     else:
         if clase.lower() == 'guerrero':
-            inv.insert_one({'id':id, 'cabeza':'yelmo nivel 1', 'cuerpo':'peto de malla nivel 1',  'manos':'brazales nivel 1', 'piernas':'grebas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'espada de madera', 'arma secundaria':'escudo de madera'})
+            inv.insert_one({'id':id, 'personaje':'Guerrero', 'cabeza':'yelmo nivel 1', 'cuerpo':'peto de malla nivel 1',  'manos':'brazales nivel 1', 'piernas':'grebas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'espada de madera', 'arma secundaria':'escudo de madera'})
             await ctx.send(f'Felicidades! Ya eres un Guerrero.\nSe agregó a tu inventario lo siguiente:\n-Yelmo nivel 1\n-Peto de malla nivel 1\n-Brazales nivel 1\n-Grebas nivel 1\n-Botas nivel 1\n-Espada de madera\n-Escudo de madera')
         if clase.lower() == 'arquero':
-            inv.insert_one({'id':id, 'cabeza':'capucha nivel 1', 'cuerpo':'peto de cuero nivel 1',  'manos':'guantes nivel 1', 'piernas':'piernas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'arco nivel 1', 'arma secundaria':'carcaj nivel 1'})
+            inv.insert_one({'id':id, 'personaje':'Arquero', 'cabeza':'capucha nivel 1', 'cuerpo':'peto de cuero nivel 1',  'manos':'guantes nivel 1', 'piernas':'piernas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'arco nivel 1', 'arma secundaria':'carcaj nivel 1'})
             await ctx.send(f'Felicidades! Ya eres un Arquero.\nSe agregó a tu inventario lo siguiente:\n-Capucha nivel 1\n-Peto de cuero nivel 1\n-Guantes nivel 1\n-Piernas nivel 1\n-Botas nivel 1\n-Arco nivel 1\n-Carcaj nivel 1')
         if clase.lower() == 'huaso':
-            inv.insert_one({'id':id, 'cabeza':'chupalla nivel 1', 'cuerpo':'manta de huaso nivel 1', 'manos':'pañuelo nivel 1', 'piernas':'pantalones de huaso nivel 1', 'pies':'botas de huaso nivel 1', 'arma primaria':'empanada', 'arma secundaria':'anticucho'})
+            inv.insert_one({'id':id, 'personaje':'Huaso', 'cabeza':'chupalla nivel 1', 'cuerpo':'manta de huaso nivel 1', 'manos':'pañuelo nivel 1', 'piernas':'pantalones de huaso nivel 1', 'pies':'botas de huaso nivel 1', 'arma primaria':'empanada', 'arma secundaria':'anticucho'})
             await ctx.send(f'Felicidades! Ya eres un Huaso.\nSe agrego a tu inventario lo siguiente:\n-Chupalla nivel 1\n-Manta de huaso nivel 1\n-Pañuelo nivel 1\n-Pantalones de huaso nivel 1\n-Botas de huaso nivel 1\n-Empanada\n-Anticucho')
+
+@bot.command()
+async def personaje(ctx):
+    id = ctx.message.author.id
+    data = inv.find_one({'id':id})
+    if data:
+        await ctx.send(f'Tu personaje es clase {data["personaje"]}')
+    else:
+        await ctx.send('No tienes ningun personaje. Crea uno con el comando "y elegir".')
 
 @bot.command()
 @commands.cooldown(1, 300, commands.BucketType.user)
