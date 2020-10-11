@@ -950,5 +950,15 @@ async def armadura(ctx, *, nombre):
     #await ctx.send(f'Defensa: {data["defensa"]}\nResistencia: {data["resistencia"]}')
     await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
 
+@bot.command(name='bot')
+async def bot_avatar(ctx, *word):
+    bot_name = urllib.parse.quote_plus(ctx.message.author.nick)
+    if word:
+        bot_name = ''.join(word).strip()
+    print(f'Creating {bot_name} bot...')
+    embed=discord.Embed(title=f'Hola, soy el bot {bot_name} 🤖')
+    embed.set_image(url=f'https://robohash.org/{bot_name}.png?size=300x300&set=set1')
+    await ctx.send(embed=embed)
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
