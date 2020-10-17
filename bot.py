@@ -815,8 +815,6 @@ async def sismo(ctx):
 
     await ctx.send(f'Lugar: {referencia1}\nHora: {hora1}\nMagnitud: {magnitud1}\nProfundidad: {profundidad1}')
 
-
-
 @bot.command(aliases=['pilsen', 'chela', 'xela', 'untappd'])
 async def beer(ctx, *, query):
     url = f'{UNTAPPD_URL}search/beer?q={query}&client_secret={UNTAPPD_SECRET}&client_id={UNTAPPD_ID}'
@@ -924,6 +922,38 @@ async def monedas(ctx):
         await ctx.send(f'Tienes {moneda} monedas en tu inventario')
     else:
         await ctx.send('No estas en el canal de farmeo. Vira de aqui larva')
+
+@bot.command()
+@commands.cooldown(1, 60, commands.BucketType.user)
+async def robar(ctx):
+    ladron = ctx.message.author.id
+    vistima = ctx.message.mentions[0].id
+    data = inv.find_one({'id':ladron})
+    data3 = inv.find_one({'id':vistima})
+    if random.randint(0,100) < 26:
+        if random.randint(0,100) == 1:
+            monedas = data3['monedas']
+            nueva_moneda = monedas - monedas
+            inv.update_one({'id':vistima}, {'$set': {'monedas':nueva_moneda}})
+            monedas_robadas = monedas + data['monedas']
+            inv.update_one({'id':ladron}, {'$set': {'monedas':monedas_robadas}})
+
+            await ctx.send(f'Chaaa hermanito vo eri vio, le robaste todo al otro lokito. Ahora tienes {monedas_robadas} monedas')
+        else:
+            monedita = data3['monedas']
+            money20 = (monedita*20)/100 
+            money20 = int(money20)
+            monea = data3['monedas'] - money20
+            inv.update_one({'id':vistima}, {'$set': {'monedas':monea}})
+            moneasa = data['monedas'] + money20
+            inv.update_one({'id':ladron}, {'$set': {'monedas':moneasa}})
+
+            await ctx.send(f'Ya choro bomba, pudiste robarle al otro pajaron. Tienes {data["monedas"]} monedas')
+    else:
+        manage_karma(ladron, -1)
+        data2 = members.find_one({'id':ladron})
+
+        await ctx.send(f'Robar es malo compare, piensa lo que haces. Te quito karma por pao. Tienes {data2["karma"]} karma.')
 
 @bot.command()
 async def eliminar(ctx):
