@@ -177,6 +177,13 @@ async def on_voice_state_update(member, before, after):
                     voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
+        if after.channel is None:
+            voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+            if voice_client and voice_client.channel == before.channel:
+                connected_users = voice_client.channel.members
+                if len(connected_users) == 1 and connected_users[0].bot:
+                    print('Voice channel empty, leaving...')
+                    await voice_client.disconnect()
     except Exception as e:
         print(e)
 
