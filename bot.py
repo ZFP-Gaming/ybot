@@ -929,31 +929,34 @@ async def robar(ctx):
     ladron = ctx.message.author.id
     vistima = ctx.message.mentions[0].id
     data = inv.find_one({'id':ladron})
+    data2 = members.find_one({'id':ladron})
     data3 = inv.find_one({'id':vistima})
-    if random.randint(0,100) < 26:
-        if random.randint(0,100) == 1:
-            monedas = data3['monedas']
-            nueva_moneda = monedas - monedas
-            inv.update_one({'id':vistima}, {'$set': {'monedas':nueva_moneda}})
-            monedas_robadas = monedas + data['monedas']
-            inv.update_one({'id':ladron}, {'$set': {'monedas':monedas_robadas}})
-
-            await ctx.send(f'Chaaa hermanito vo eri vio, le robaste todo al otro lokito. Ahora tienes {monedas_robadas} monedas')
-        else:
-            monedita = data3['monedas']
-            money20 = (monedita*20)/100 
-            money20 = int(money20)
-            monea = data3['monedas'] - money20
-            inv.update_one({'id':vistima}, {'$set': {'monedas':monea}})
-            moneasa = data['monedas'] + money20
-            inv.update_one({'id':ladron}, {'$set': {'monedas':moneasa}})
-
-            await ctx.send(f'Ya choro bomba, pudiste robarle al otro pajaron. Tienes {data["monedas"]} monedas')
+    if data2['karma'] < -5:
+        await ctx.send(f'Sorry compare, no puedes ocupar este comando porque tienes {data2["karma"]} de karma.')
     else:
-        manage_karma(ladron, -1)
-        data2 = members.find_one({'id':ladron})
+        if random.randint(0,100) < 26:
+            if random.randint(0,100) == 1:
+                monedas = data3['monedas']
+                nueva_moneda = monedas - monedas
+                inv.update_one({'id':vistima}, {'$set': {'monedas':nueva_moneda}})
+                monedas_robadas = monedas + data['monedas']
+                inv.update_one({'id':ladron}, {'$set': {'monedas':monedas_robadas}})
 
-        await ctx.send(f'Robar es malo compare, piensa lo que haces. Te quito karma por pao. Tienes {data2["karma"]} karma.')
+                await ctx.send(f'Chaaa hermanito vo eri vio, le robaste todo al otro lokito. Ahora tienes {monedas_robadas} monedas')
+            else:
+                monedita = data3['monedas']
+                money20 = (monedita*20)/100 
+                money20 = int(money20)
+                monea = data3['monedas'] - money20
+                inv.update_one({'id':vistima}, {'$set': {'monedas':monea}})
+                moneasa = data['monedas'] + money20
+                inv.update_one({'id':ladron}, {'$set': {'monedas':moneasa}})
+
+                await ctx.send(f'Ya choro bomba, pudiste robarle al otro pajaron. Tienes {data["monedas"]} monedas')
+        else:
+            manage_karma(ladron, -1)
+
+            await ctx.send(f'Robar es malo compare, piensa lo que haces. Te quito karma por pao. Tienes {data2["karma"]} karma.')
 
 @bot.command()
 async def eliminar(ctx):
