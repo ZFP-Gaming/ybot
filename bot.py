@@ -1000,5 +1000,20 @@ async def bot_avatar(ctx, *word):
     embed.set_image(url=f'https://robohash.org/{bot_name}.png?size=300x300&set=set1')
     await ctx.send(embed=embed)
 
+@bot.command(name='traduce')
+async def translate(ctx, *, query):
+    try:
+        values = query.split(' ')
+        origin = values[0]
+        destination = values[1]
+        message = ' '.join(values[2:])
+        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl={origin}&tl={destination}&dt=t&q={message}'
+        print(url)
+        data = requests.get(url).json()
+        await ctx.send(f'🌐 {data[0][0][0]}')
+    except Exception as e:
+        print(e)
+        await ctx.send('No cacho ¯\_(ツ)_/¯')
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
