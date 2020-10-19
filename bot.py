@@ -956,10 +956,10 @@ async def robar(ctx):
                 money20 = int(money20)
                 monea = data3['monedas'] - money20
                 inv.update_one({'id':vistima}, {'$set': {'monedas':monea}})
-                moneasa = data['monedas'] + money20
-                inv.update_one({'id':ladron}, {'$set': {'monedas':moneasa}})
+                saldoFinal = data['monedas'] + money20
+                inv.update_one({'id':ladron}, {'$set': {'monedas':saldoFinal}})
 
-                await ctx.send(f'Ya choro bomba, pudiste robarle al otro pajaron. Tienes {data["monedas"]} monedas')
+                await ctx.send(f'Ya choro bomba, pudiste robarle al otro pajaron. Tienes {saldoFinal} monedas')
         else:
             manage_karma(ladron, -1)
 
@@ -1014,6 +1014,18 @@ async def translate(ctx, *, query):
     except Exception as e:
         print(e)
         await ctx.send('No cacho ¯\_(ツ)_/¯')
+
+@bot.command()
+@commands.cooldown(1, 7200, commands.BucketType.user)
+async def rezar(ctx):
+    catolico = ctx.message.author.id
+    data = members.find_one({'id':catolico})
+    if random.randint(0,100) < 31:
+        manage_karma(catolico, 1)
+
+        await ctx.send(f'Lo lograste, eres un pan de Dios. Te ilumino con 1 karma. Tienes {data["karma"]} de karma.')
+    else:
+        await ctx.send('Te falta fe hijo del diaulo, vuelve cuando aprendas a rezar.')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
