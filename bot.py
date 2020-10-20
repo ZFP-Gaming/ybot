@@ -979,13 +979,13 @@ objetos.insert_one({'nombre':'escudo de madera', 'defensa':3, 'resistencia':'neu
 objetos.insert_one({'nombre':'carcaj', 'daño':2, 'elemento':'neutro'})
 
 @bot.command()
-async def arma(ctx, *, nombre):
+async def arma(ctx, *nombre):
     data = objetos.find_one({'nombre':nombre})
     #await ctx.send(f'Daño: {data["daño"]}\nElemento: {data["elemento"]}')
     await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
 
 @bot.command()
-async def armadura(ctx, *, nombre):
+async def armadura(ctx, *nombre):
     data = objetos.find_one({'nombre':nombre})
     #await ctx.send(f'Defensa: {data["defensa"]}\nResistencia: {data["resistencia"]}')
     await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
@@ -1026,6 +1026,27 @@ async def rezar(ctx):
         await ctx.send(f'Lo lograste, eres un pan de Dios. Te ilumino con 1 karma. Tienes {data["karma"]} de karma.')
     else:
         await ctx.send('Te falta fe hijo del diaulo, vuelve cuando aprendas a rezar.')
+
+@bot.command()
+async def donar(ctx, n, value):
+    donante = ctx.message.author.id
+    donatario = ctx.message.mentions[0].id
+    data_donante = members.find_one({'id':donante})
+    data_donatario = members.find_one({'id':donatario})
+    value = int(value)
+    if data_donante and data_donatario:
+        if value < 0:
+            await ctx.send('Tiene que ser un digito valido po pao')
+        else:
+            if data_donante['karma'] > value and value > 0:
+                karma_donante = data_donante['karma'] - value
+                karma_donatario = data_donatario['karma'] + value
+                members.update_one({'id':donante}, {'$set': {'karma':karma_donante}})
+                members.update_one({'id':donatario}, {'$set': {'karma':karma_donatario}})
+
+                await ctx.send(f'Gracias por donarle a {n}, ahora tiene {karma_donatario} puntos de karma y tu quedaste con {karma_donante} puntos de karma.')
+            else:
+                await ctx.send('No tienes el karma necesario para poder donar.')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
