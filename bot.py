@@ -65,6 +65,8 @@ intros = db.bot.intros
 settings = db.bot.settings
 wikipedia.set_lang("es")
 
+VOLUME = 1.0
+
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 
 reddit = praw.Reddit(
@@ -99,6 +101,8 @@ def check_queue(voice_client):
     if queue != []:
         sound_effect = queue.pop(0)
         voice_client.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(voice_client))
+        voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+        voice_client.source.volume = VOLUME
 
 def youtube_search(query):
     params = {
@@ -175,6 +179,8 @@ async def on_voice_state_update(member, before, after):
                 data = intros.find_one({'id': id})
                 if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
                     voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
+                    voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+                    voice_client.source.volume = VOLUME
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
         if after.channel is None:
@@ -691,6 +697,8 @@ async def sound(ctx, effect):
                 if not vc.is_playing():
                     print('Empty queue, playing...')
                     vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
+                    vc.source = discord.PCMVolumeTransformer(vc.source)
+                    vc.source.volume = VOLUME
                 else:
                     print(f'Added to queue: {sound_effect}')
                     queue.append(sound_effect)
@@ -1047,6 +1055,11 @@ async def donar(ctx, n, value):
                 await ctx.send(f'Gracias por donarle a {n}, ahora tiene {karma_donatario} puntos de karma y tu quedaste con {karma_donante} puntos de karma.')
             else:
                 await ctx.send('No tienes el karma necesario para poder donar.')
+
+@bot.command()
+async def volume(ctx, value):
+    VOLUME = int(value)/100
+    await ctx.send(f'El volumen actual es {VOLUME}')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
