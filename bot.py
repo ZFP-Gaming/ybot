@@ -65,9 +65,8 @@ intros = db.bot.intros
 settings = db.bot.settings
 wikipedia.set_lang("es")
 
-VOLUME = 1.0
-
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
+bot.volume = 1.0
 
 reddit = praw.Reddit(
     client_id=REDDIT_ID,
@@ -102,7 +101,7 @@ def check_queue(voice_client):
         sound_effect = queue.pop(0)
         voice_client.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(voice_client))
         voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
-        voice_client.source.volume = VOLUME
+        voice_client.source.volume = bot.volume
 
 def youtube_search(query):
     params = {
@@ -180,7 +179,7 @@ async def on_voice_state_update(member, before, after):
                 if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
                     voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
                     voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
-                    voice_client.source.volume = VOLUME
+                    voice_client.source.volume = bot.volume
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
         if after.channel is None:
@@ -698,7 +697,7 @@ async def sound(ctx, effect):
                     print('Empty queue, playing...')
                     vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
                     vc.source = discord.PCMVolumeTransformer(vc.source)
-                    vc.source.volume = VOLUME
+                    vc.source.volume = bot.volume
                 else:
                     print(f'Added to queue: {sound_effect}')
                     queue.append(sound_effect)
@@ -960,7 +959,7 @@ async def robar(ctx):
                 await ctx.send(f'Chaaa hermanito vo eri vio, le robaste todo al otro lokito. Ahora tienes {monedas_robadas} monedas')
             else:
                 monedita = data3['monedas']
-                money20 = (monedita*20)/100 
+                money20 = (monedita*20)/100
                 money20 = int(money20)
                 monea = data3['monedas'] - money20
                 inv.update_one({'id':vistima}, {'$set': {'monedas':monea}})
@@ -1058,8 +1057,12 @@ async def donar(ctx, n, value):
 
 @bot.command()
 async def volume(ctx, value):
-    VOLUME = int(value)/100
-    await ctx.send(f'El volumen actual es {VOLUME}')
+    try:
+        bot.volume = int(value)/100
+        await ctx.send(f'El volumen actual es {value}%')
+    except Exception as e:
+        print(e)
+        await ctx.send('')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
