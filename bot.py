@@ -1156,7 +1156,7 @@ async def joke(ctx):
             await channel.connect()
         vc = ctx.voice_client
         vc.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda x: check_queue(vc))
-        queue.append('sounds/drums.mp3)
+        queue.append('sounds/drums.mp3')
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = bot.volume
     else:
