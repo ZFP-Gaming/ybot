@@ -1143,7 +1143,7 @@ async def joke(ctx):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
     roles = [o.name for o in ctx.message.author.roles]
-    if ('💻 dev' in roles) or data['karma'] > 10:
+    if ('💻 dev' in roles) or data['karma'] > 20:
         url = 'http://www.chistes.com/chistealazar.asp?n=4'
         data = urllib.request.urlopen(url)
         soup = BeautifulSoup(data, 'html.parser')
