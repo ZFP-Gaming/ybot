@@ -1080,5 +1080,23 @@ async def wanted(ctx, user: discord.Member = None):
     wanted.save("profile.png", 'PNG')
     await ctx.send(file = discord.File("profile.png"))
 
+@bot.command()
+async def drake(ctx, evitado, elegido):
+    if evitado and elegido:
+        preferencia = Image.open("./images/drake.png")
+
+        evitado_avatar = ctx.message.mentions[0].avatar_url_as(format='png', size=128)
+        elegido_avatar = ctx.message.mentions[1].avatar_url_as(format='png', size=128)
+        data = BytesIO(await evitado_avatar.read())
+        data2 = BytesIO(await elegido_avatar.read())
+        evitado = Image.open(data).convert('RGBA')
+        elegido = Image.open(data2).convert('RGBA')
+        evitado = evitado.resize((225, 200))
+        elegido = elegido.resize((225, 190))
+        preferencia.paste(evitado, (244, 10), mask=evitado)
+        preferencia.paste(elegido, (243, 233), mask=elegido)
+        preferencia.save("profile.png", 'PNG')
+        await ctx.send(file = discord.File("profile.png"))
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
