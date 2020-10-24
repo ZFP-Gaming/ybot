@@ -1116,18 +1116,24 @@ async def wolverine(ctx):
     await ctx.send(file = discord.File("profile.png"))
 
 @bot.command()
-async def tts(ctx, *msg):
+async def tts(ctx, *, msg):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
     roles = [o.name for o in ctx.message.author.roles]
+    message = msg.split('-')
+    text_to_speech = message[0]
+    language = message[1] if len(message) > 1 else 'ja'
     if ('💻 dev' in roles) or data['karma'] > 10:
-        tts = gTTS(text=msg, lang='ja')
+        tts = gTTS(text=text_to_speech, lang=language)
         tts.save("tts.mp3")
+        voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+        if not voice_client:
+            channel = ctx.message.author.voice.channel
+            await channel.connect()
         vc = ctx.voice_client
         vc.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda x: check_queue(vc))
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = bot.volume
-    
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
