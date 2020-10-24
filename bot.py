@@ -1118,7 +1118,6 @@ async def wolverine(ctx):
     data = BytesIO(await avatar.read())
     user = Image.open(data).convert('RGBA')
     user = user.resize((300, 400))
-    # user = user.rotate(6)
     wolverine_base.paste(user, (170, 460), mask=user)
     wolverine_base.paste(wolverine_hands, (0, 434), mask=wolverine_hands)
     wolverine_base.save("profile.png", 'PNG')
