@@ -1120,9 +1120,9 @@ async def tts(ctx, *, msg):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
     roles = [o.name for o in ctx.message.author.roles]
-    message = msg.split('-')
+    message = msg.split('/')
     text_to_speech = message[0]
-    language = message[1] if len(message) > 1 else 'ja'
+    language = message[1] if len(message) > 1 else 'es'
     if ('💻 dev' in roles) or data['karma'] > 10:
         tts = gTTS(text=text_to_speech, lang=language)
         tts.save("tts.mp3")
