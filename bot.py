@@ -24,6 +24,7 @@ from discord.ext import commands
 from PIL import Image
 from io import BytesIO
 from gtts import gTTS
+from bs4 import BeautifulSoup
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -1134,6 +1135,31 @@ async def tts(ctx, *, msg):
         vc.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda x: check_queue(vc))
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = bot.volume
+    else:
+        await ctx.send(ACCESS_DENIED)
+
+@bot.command(name='chiste')
+async def joke(ctx):
+    id = ctx.message.author.id
+    data = members.find_one({'id': id})
+    roles = [o.name for o in ctx.message.author.roles]
+    if ('💻 dev' in roles) or data['karma'] > 10:
+        url = 'http://www.chistes.com/chistealazar.asp?n=4'
+        data = urllib.request.urlopen(url)
+        soup = BeautifulSoup(data, 'html.parser')
+        divs = soup.findAll('div', {'class': 'chiste'})
+        tts = gTTS(text=divs[0].text, lang='es')
+        tts.save("tts.mp3")
+        voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+        if not voice_client:
+            channel = ctx.message.author.voice.channel
+            await channel.connect()
+        vc = ctx.voice_client
+        vc.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda x: check_queue(vc))
+        vc.source = discord.PCMVolumeTransformer(vc.source)
+        vc.source.volume = bot.volume
+    else:
+        await ctx.send(ACCESS_DENIED)
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
