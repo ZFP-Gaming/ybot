@@ -21,6 +21,8 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime
 from discord.ext import commands
+from PIL import Image
+from io import BytesIO
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -1027,7 +1029,7 @@ async def translate(ctx, *, query):
 async def rezar(ctx):
     catolico = ctx.message.author.id
     data = members.find_one({'id':catolico})
-    if random.randint(0,100) < 31:
+    if random.randint(0,100) < 6:
         manage_karma(catolico, 1)
 
         await ctx.send(f'Lo lograste, eres un pan de Dios. Te ilumino con 1 karma. Tienes {data["karma"]} de karma.')
@@ -1063,6 +1065,20 @@ async def volume(ctx, value):
     except Exception as e:
         print(e)
         await ctx.send('')
+
+@bot.command(name='busca')
+async def wanted(ctx, user: discord.Member = None):
+    if user == None:
+        user = ctx.author
+    wanted = Image.open("./images/wanted.jpg")
+
+    assets = user.avatar_url_as(size=128)
+    data = BytesIO(await assets.read())
+    pfp = Image.open(data)
+    pfp = pfp.resize((807,669))
+    wanted.paste(pfp, (219, 521))
+    wanted.save("profile.jpg")
+    await ctx.send(file = discord.File("profile.jpg"))
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
