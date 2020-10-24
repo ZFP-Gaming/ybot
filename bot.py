@@ -23,6 +23,7 @@ from datetime import datetime
 from discord.ext import commands
 from PIL import Image
 from io import BytesIO
+from gtts import gTTS
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -590,15 +591,6 @@ async def wiki(ctx, *, query):
         await ctx.send('No encontré resultados')
 
 @bot.command()
-async def alarma(ctx, *, hora):
-    local_time = float(hora)
-    local_time = local_time * 60
-    # time.sleep(local_time)
-    recordatorio = 'VAMOS CABROS DESPIERTEN!! ES HORA DE SACAR EL MILLONCITO!!'
-
-    await ctx.send(recordatorio)
-
-@bot.command()
 async def play(ctx, *, query):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
@@ -1122,6 +1114,20 @@ async def wolverine(ctx):
     wolverine_base.paste(wolverine_hands, (0, 434), mask=wolverine_hands)
     wolverine_base.save("profile.png", 'PNG')
     await ctx.send(file = discord.File("profile.png"))
+
+@bot.command()
+async def tts(ctx, *msg):
+    id = ctx.message.author.id
+    data = members.find_one({'id': id})
+    roles = [o.name for o in ctx.message.author.roles]
+    if ('💻 dev' in roles) or data['karma'] > 10:
+        tts = gTTS(text=msg, lang='ja')
+        tts.save("tts.mp3")
+        vc = ctx.voice_client
+        vc.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda x: check_queue(vc))
+        vc.source = discord.PCMVolumeTransformer(vc.source)
+        vc.source.volume = bot.volume
+    
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
