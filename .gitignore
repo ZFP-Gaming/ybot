@@ -4,3 +4,7 @@ bot-env/
 tmp/mongodb_data/
 
 *.mp3
+
+profile.jpg
+
+profile.png

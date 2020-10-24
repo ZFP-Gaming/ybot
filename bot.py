@@ -1070,15 +1070,15 @@ async def volume(ctx, value):
 async def wanted(ctx, user: discord.Member = None):
     if user == None:
         user = ctx.author
-    wanted = Image.open("./images/wanted.jpg")
+    wanted = Image.open("./images/wanted.png")
 
-    assets = user.avatar_url_as(size=128)
-    data = BytesIO(await assets.read())
-    pfp = Image.open(data)
-    pfp = pfp.resize((807,669))
-    wanted.paste(pfp, (219, 521))
-    wanted.save("profile.jpg")
-    await ctx.send(file = discord.File("profile.jpg"))
+    user_avatar = user.avatar_url_as(format='png', size=128)
+    data = BytesIO(await user_avatar.read())
+    avatar = Image.open(data).convert('RGBA')
+    avatar = avatar.resize((807, 669))
+    wanted.paste(avatar, (219, 521), mask=avatar)
+    wanted.save("profile.png", 'PNG')
+    await ctx.send(file = discord.File("profile.png"))
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
