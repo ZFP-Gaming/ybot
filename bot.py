@@ -1030,25 +1030,27 @@ async def rezar(ctx):
         await ctx.send('Te falta fe hijo del diaulo, vuelve cuando aprendas a rezar.')
 
 @bot.command()
-async def donar(ctx, n, value):
-    donante = ctx.message.author.id
-    donatario = ctx.message.mentions[0].id
-    data_donante = members.find_one({'id':donante})
-    data_donatario = members.find_one({'id':donatario})
-    value = int(value)
-    if data_donante and data_donatario:
-        if value < 0:
-            await ctx.send('Tiene que ser un digito valido po pao')
-        else:
-            if data_donante['karma'] > value and value > 0:
-                karma_donante = data_donante['karma'] - value
-                karma_donatario = data_donatario['karma'] + value
-                members.update_one({'id':donante}, {'$set': {'karma':karma_donante}})
-                members.update_one({'id':donatario}, {'$set': {'karma':karma_donatario}})
+async def comprar(ctx, cantidad, objeto):
+    id = ctx.message.author.id
+    dataMembers = members.find_one({'id':id})
+    dataInv = inv.find_one({'id':id})
+    cantidad = int(cantidad)
+    if cantidad >= 0:
+        if objeto.lower() == 'karma':
+            precio = cantidad * 500
+            if dataInv['monedas'] >= precio:
+                nuevas_monedas = dataInv['monedas'] - precio
+                inv.update_one({'id':id}, {'$set': {'monedas':nuevas_monedas}})
+                nuevo_karma = dataMembers['karma'] + cantidad
+                members.update_one({'id':id}, {'$set': {'karma':nuevo_karma}})
 
-                await ctx.send(f'Gracias por donarle a {n}, ahora tiene {karma_donatario} puntos de karma y tu quedaste con {karma_donante} puntos de karma.')
+                await ctx.send(f'Tu compra ha sido un exito! te quedaron {nuevas_monedas} monedas y ahora tienes {nuevo_karma} puntos de karma.')
             else:
-                await ctx.send('No tienes el karma necesario para poder donar.')
+                await ctx.send(f'No tienes las monedas suficientes para comprar {cantidad} puntos de karma.')
+        else:
+            await ctx.send('Creo que no tengo ese objeto a la venta, pero se lo pedire a los chinos.')     
+    else:
+        await ctx.send('Numeros negativos? entero logi pao ql')          
 
 @bot.command()
 async def volume(ctx, value):
