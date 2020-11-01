@@ -1048,9 +1048,9 @@ async def comprar(ctx, cantidad, objeto):
             else:
                 await ctx.send(f'No tienes las monedas suficientes para comprar {cantidad} puntos de karma.')
         else:
-            await ctx.send('Creo que no tengo ese objeto a la venta, pero se lo pedire a los chinos.')     
+            await ctx.send('Creo que no tengo ese objeto a la venta, pero se lo pedire a los chinos.')
     else:
-        await ctx.send('Numeros negativos? entero logi pao ql')          
+        await ctx.send('Numeros negativos? entero logi pao ql')
 
 @bot.command()
 async def volume(ctx, value):
@@ -1163,6 +1163,12 @@ async def joke(ctx):
         vc.source.volume = bot.volume
     else:
         await ctx.send(ACCESS_DENIED)
+
+
+@bot.command()
+async def shuffle(ctx, *, msg):
+    reordered = random(shuffle(msg.split(',')))
+    await ctx.send(', '.join(reordered))
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
