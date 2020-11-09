@@ -74,6 +74,9 @@ wikipedia.set_lang("es")
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ')
 bot.volume = 1.0
 
+intents = discord.Intents.default()
+intents.members = True
+
 reddit = praw.Reddit(
     client_id=REDDIT_ID,
     client_secret=REDDIT_SECRET,
