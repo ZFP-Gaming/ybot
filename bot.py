@@ -12,6 +12,7 @@ import validators
 import urllib.request
 import shutil
 import praw
+import matplotlib.pyplot as plt
 
 from os import path
 from os import listdir
@@ -25,6 +26,7 @@ from PIL import Image
 from io import BytesIO
 from gtts import gTTS
 from bs4 import BeautifulSoup
+
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -1048,9 +1050,9 @@ async def comprar(ctx, cantidad, objeto):
             else:
                 await ctx.send(f'No tienes las monedas suficientes para comprar {cantidad} puntos de karma.')
         else:
-            await ctx.send('Creo que no tengo ese objeto a la venta, pero se lo pedire a los chinos.')     
+            await ctx.send('Creo que no tengo ese objeto a la venta, pero se lo pedire a los chinos.')
     else:
-        await ctx.send('Numeros negativos? entero logi pao ql')          
+        await ctx.send('Numeros negativos? entero logi pao ql')
 
 @bot.command()
 async def volume(ctx, value):
@@ -1170,6 +1172,32 @@ async def shuffle(ctx, *, msg):
     random.shuffle(ordered)
 
     await ctx.send(','.join(ordered))
+
+@bot.command()
+async def forbes(ctx):
+    money_list = list(inv.find())
+    money_users = []
+    for member in money_list:
+        if 'monedas' not in member:
+            continue
+
+        user = bot.get_user(member['id'])
+        if user and not user.bot:
+            money_users.append({
+                'name': user.name,
+                'coins': member['monedas']
+            })
+    names = [x['name'] for x in money_users]
+    coins = [x['coins'] for x in money_users]
+
+    size = len(money_users)
+    plt.bar(range(size), coins, edgecolor='black')
+
+    plt.xticks(range(size), names, rotation=60)
+    plt.title("Distribución de dinero en ZFP Gaming")
+    plt.ylim(min(coins) - 1, max(coins) + 1)
+    plt.savefig("coins_graph.png")
+    await ctx.send(file = discord.File("coins_graph.png"))
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
