@@ -1199,6 +1199,7 @@ async def forbes(ctx):
     plt.xticks(range(size), names, rotation=60)
     plt.title("Distribución de dinero en ZFP Gaming")
     plt.ylim(min(coins) - 1, max(coins) + 1)
+    plt.tight_layout()
     plt.savefig("coins_graph.png")
     await ctx.send(file = discord.File("coins_graph.png"))
 
