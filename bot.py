@@ -1203,5 +1203,27 @@ async def forbes(ctx):
     plt.savefig("coins_graph.png")
     await ctx.send(file = discord.File("coins_graph.png"))
 
+@bot.command()
+async def update_record(ctx, *, options):
+    if ctx.message.author.id == 134686670535524352:
+        args = options.split(' ')
+        user_id = int(args[0])
+        operation = args[1]
+        amount = int(args[2])
+        if operation == 'karma':
+            member = members.find_one({'id': user_id})
+            if member:
+                members.update_one({'id': user_id}, {'$set': {'karma': amount}})
+            else:
+                members.insert_one({'id': user_id, 'description': '', 'karma': amount})
+        else:
+            member = inv.find_one({'id': user_id})
+            if member:
+                inv.update_one({'id': user_id}, {'$set': {'monedas': amount}})
+            else:
+                inv.insert_one({'id': user_id, 'monedas': amount})
+    else:
+        await ctx.send('🤖 Actualizado')
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
