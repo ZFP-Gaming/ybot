@@ -59,6 +59,8 @@ UNTAPPD_SECRET = os.getenv('UNTAPPD_SECRET')
 REDDIT_ID = os.getenv('REDDIT_ID')
 REDDIT_SECRET = os.getenv('REDDIT_SECRET')
 ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
+PIKASEN_URL = os.getenv('PIKASEN_URL')
+PIKASEN_CDN = os.getenv('PIKASEN_CDN')
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -1224,6 +1226,22 @@ async def update_record(ctx, *, options):
                 inv.insert_one({'id': user_id, 'monedas': amount})
     else:
         await ctx.send('🤖 Actualizado')
+
+@bot.command()
+async def pikasen(ctx, *, query):
+    try:
+        await ctx.message.add_reaction('😏')
+        url = f'{PIKASEN_URL}{query}'
+        req = requests.get(url = url)
+        response = req.json()
+        if response:
+            item = random.choice(response)
+            await ctx.author.send(f'{PIKASEN_CDN}/{item["directory"]}/{item["image"]}')
+        else:
+            await ctx.author.send('No encontré nada (por suerte 😰)')
+    except Exception as e:
+        print(e)
+        await ctx.author.send('No encontré nada (por suerte 😰)')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
