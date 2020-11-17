@@ -45,4 +45,4 @@ websockets==8.1
 wikipedia==1.4.0
 wrapt==1.12.1
 yarl==1.5.1
-youtube-dl==2020.9.6
+youtube-dl==2020.11.17
