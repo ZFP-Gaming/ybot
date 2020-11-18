@@ -27,7 +27,6 @@ from io import BytesIO
 from gtts import gTTS
 from bs4 import BeautifulSoup
 
-
 load_dotenv()
 KARMA_COOLDOWN = 30
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -130,6 +129,20 @@ def youtube_search(query):
     if 'items' in data and len(data['items']) > 0:
         video_id = data['items'][0]['id']['videoId']
         return f'https://youtu.be/{video_id}'
+
+@bot.event
+async def on_member_join(member):
+    toque = Image.open('./images/toque.png')
+    avatar = member.avatar_url_as(format='png', size=128)
+    data = BytesIO(await avatar.read())
+    img = Image.open(data).convert('RGBA')
+    img_bw = img.copy()
+    img_bw = img_bw.convert('L')
+    toque.paste(img_bw, (790, 133), mask=img)
+    toque.save("profile.png", 'PNG')
+    channel = discord.utils.get(member.guild.channels, name="bienvenida")
+    await channel.send(f"Bienvenido, {member.mention}, al mundo de ZFP!")
+    await channel.send(file = discord.File("profile.png"))
 
 @bot.event
 async def on_ready():
