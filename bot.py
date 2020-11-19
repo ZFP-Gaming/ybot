@@ -1256,5 +1256,48 @@ async def pikasen(ctx, *, query):
         print(e)
         await ctx.author.send('No encontré nada (por suerte 😰)')
 
+@bot.command()
+async def seba(ctx, effect):
+    sound_effect = f'sounds/{effect}.mp3'
+    try:
+        if ctx.message.author.id == 121417708469223428:
+            if path.exists(sound_effect):
+                voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+                if not voice_client:
+                    channel = ctx.message.author.voice.channel
+                    await channel.connect()
+                if ctx.author.voice and ctx.voice_client:
+                    vc = ctx.voice_client
+                    if not vc.is_playing():
+                        print('Empty queue, playing...')
+                        for i in range(9):
+                            queue.append(sound_effect)
+                        vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
+                        vc.source = discord.PCMVolumeTransformer(vc.source)
+                        vc.source.volume = bot.volume
+                    else:
+                        print(f'Added to queue: {sound_effect}')
+                        for i in range(10):
+                            queue.append(sound_effect)
+                else:
+                    await ctx.send('No estás conectado a un canal de audio')
+            else:
+                await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
+        else:
+            reactions = [
+                'https://media.giphy.com/media/3oFzmko6SiknmpR2NO/giphy.gif',
+                'https://media.giphy.com/media/mcH0upG1TeEak/giphy.gif',
+                'https://media.giphy.com/media/lTYXWBnuA4oFA5R3dp/giphy.gif',
+                'https://media.giphy.com/media/3o7TKr3nzbh5WgCFxe/giphy.gif',
+                'https://media.giphy.com/media/zMQcrvqjkC9d6/giphy.gif',
+                'https://media.giphy.com/media/cr9vIO7NsP5cY/giphy.gif',
+                'https://media.giphy.com/media/l1OgggMcFwPidLdjtJ/giphy.gif',
+                'https://media.giphy.com/media/8gQR12M5d4kPMRYoC1/giphy.gif'
+            ]
+            await ctx.send(random.choice(reactions))
+    except Exception as e:
+        print(e)
+        await ctx.send('Exploté 💣')
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
