@@ -13,6 +13,7 @@ import urllib.request
 import shutil
 import praw
 import matplotlib.pyplot as plt
+import redis
 
 from os import path
 from os import listdir
@@ -30,6 +31,7 @@ from faker import Faker
 
 load_dotenv()
 KARMA_COOLDOWN = 30
+BAN_TIMEOUT = 10
 TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
@@ -61,6 +63,7 @@ REDDIT_SECRET = os.getenv('REDDIT_SECRET')
 ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
 PIKASEN_URL = os.getenv('PIKASEN_URL')
 PIKASEN_CDN = os.getenv('PIKASEN_CDN')
+REDIS = os.getenv('REDIS')
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -72,6 +75,8 @@ actions = db.bot.actions
 intros = db.bot.intros
 settings = db.bot.settings
 wikipedia.set_lang("es")
+if REDIS:
+    r = redis.Redis(host='localhost', port=6379, db=0)
 
 intents = discord.Intents.default()
 intents.members = True
@@ -131,6 +136,11 @@ def youtube_search(query):
         video_id = data['items'][0]['id']['videoId']
         return f'https://youtu.be/{video_id}'
 
+def check_ban(id):
+    data = r.get(str(id))
+    output = True if data else False
+    return output
+
 @bot.event
 async def on_member_join(member):
     toque = Image.open('./images/toque.png')
@@ -173,6 +183,8 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    if check_ban(message.author.id):
+        return
     msg = message.content.split(' ')
     if ('++' in msg  or '--' in msg  ) and message.mentions:
         user = message.mentions[0].id
@@ -195,6 +207,8 @@ async def on_message(message):
 @bot.event
 async def on_voice_state_update(member, before, after):
     try:
+        if check_ban(member.id):
+            return
         if before.channel is None and after.channel is not None and member.bot == False:
             voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
             if voice_client and voice_client.channel == after.channel:
@@ -1301,7 +1315,7 @@ async def seba(ctx, effect):
 
 @bot.command()
 async def password(ctx):
-    special_character = ['!', '@', '#', '$', '%', '^', '&', '*']    
+    special_character = ['!', '@', '#', '$', '%', '^', '&', '*']
     faker = Faker()
     word1 = faker.word()
     word2 = faker.word()
@@ -1313,6 +1327,37 @@ async def password(ctx):
     random.shuffle(words)
 
     await ctx.send(f'{"".join(words)}')
+
+@bot.command()
+async def ban(ctx):
+    roles = [o.name for o in ctx.message.author.roles]
+    if 'mod' in roles or ctx.message.author.guild_permissions.administrator:
+        user = ctx.message.mentions[0]
+        timeout = BAN_TIMEOUT * 60
+        r.setex(str(user.id), timeout, "banned")
+        reactions = [
+            'https://media.giphy.com/media/Vh2c84FAPVyvvjZJNM/giphy.gif',
+            'https://media.giphy.com/media/H99r2HtnYs492/giphy.gif',
+            'https://media.giphy.com/media/xT5LMDzs9xYtHXeItG/giphy.gif',
+            'https://media.giphy.com/media/LPHbzPcICc86EVte9C/giphy.gif',
+            'https://media.giphy.com/media/3o751XbGLXpORSxtQY/giphy.gif',
+            'https://media.giphy.com/media/CybZqG4etuZsA/giphy.gif',
+            'https://media.giphy.com/media/QC7jsHJ9Nlrtxby57y/giphy.gif',
+            'https://media.giphy.com/media/py07OYVelqRd6/giphy.gif',
+            'https://media1.tenor.com/images/7c9c0e53ce31b154a0bd124b73dec1c4/tenor.gif',
+            'https://media1.tenor.com/images/04a581ec0a3331f01406aa7d4ecb617b/tenor.gif',
+            'https://media1.tenor.com/images/8f74ba73b7d6902d3bbded13a1d4fab7/tenor.gif',
+            'https://media1.tenor.com/images/131d5164ac3ae13066370377cdb2e8ad/tenor.gif',
+            'https://media1.tenor.com/images/2664115d11d75f5343767fefbce8c98d/tenor.gif',
+            'https://media1.tenor.com/images/ab4216680a6edd2ac2fcea2587429343/tenor.gif',
+            'https://media1.tenor.com/images/84e564a937adbaee45e0828f0fcb0e98/tenor.gif',
+            'https://media.makeameme.org/created/llamada-para-elba.jpg'
+        ]
+        await ctx.send(random.choice(reactions))
+        await ctx.send(f'No voy a pescar a {user.name} por {BAN_TIMEOUT} minutos')
+    else:
+        await ctx.send(ACCESS_DENIED)
+
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
