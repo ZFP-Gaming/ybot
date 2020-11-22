@@ -1234,7 +1234,7 @@ async def forbes(ctx):
 
 @bot.command()
 async def update_record(ctx, *, options):
-    if ctx.message.author.id == 134686670535524352:
+    if ctx.message.author.guild_permissions.administrator:
         args = options.split(' ')
         user_id = int(args[0])
         operation = args[1]
