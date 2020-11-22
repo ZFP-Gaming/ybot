@@ -22,6 +22,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime
+from datetime import date
 from discord.ext import commands
 from PIL import Image
 from io import BytesIO
@@ -1357,6 +1358,38 @@ async def ban(ctx):
         await ctx.send(f'No voy a pescar a {user.name} por {BAN_TIMEOUT} minutos')
     else:
         await ctx.send(ACCESS_DENIED)
+
+@bot.command(name='diario')
+async def newspaper(ctx, news_source):
+    today = date.today()
+    date_with_slashes = today.strftime('%Y/%m/%d')
+    newspapers = {
+        'segunda': {
+            'url': f'http://img.kiosko.net/{date_with_slashes}/cl/cl_segunda.750.jpg'
+        },
+        'lun': {
+            'url': f'http://img.kiosko.net/{date_with_slashes}/cl/cl_ultimas_noticias.750.jpg'
+        },
+        'mercurio': {
+            'url': f'http://img.kiosko.net/{date_with_slashes}/cl/cl_mercurio.750.jpg'
+        },
+        'tercera': {
+            'url': f'http://img.kiosko.net/{date_with_slashes}/cl/cl_tercera.750.jpg'
+        },
+        'cuarta': {
+            'url': f'http://img.kiosko.net/{date_with_slashes}/cl/cl_cuarta.750.jpg'
+        }
+    }
+    if news_source in newspapers:
+        target_url = newspapers[news_source]['url']
+        response = requests.get(target_url)
+        if response.status_code == 200:
+            await ctx.send(target_url)
+        else:
+            await ctx.send('No encontré la portada de hoy 😅')
+    else:
+        await ctx.send('No tengo ese diario, las opciones actuales son:')
+        await ctx.send(f'{", ".join(newspapers.keys())}')
 
 
 print('CHORIZA ONLINE')
