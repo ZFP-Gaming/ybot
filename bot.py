@@ -26,6 +26,7 @@ from PIL import Image
 from io import BytesIO
 from gtts import gTTS
 from bs4 import BeautifulSoup
+from faker import Faker
 
 load_dotenv()
 KARMA_COOLDOWN = 30
@@ -1297,6 +1298,21 @@ async def seba(ctx, effect):
     except Exception as e:
         print(e)
         await ctx.send('Exploté 💣')
+
+@bot.command()
+async def password(ctx):
+    special_character = ['!', '@', '#', '$', '%', '^', '&', '*']    
+    faker = Faker()
+    word1 = faker.word()
+    word2 = faker.word()
+    number = str(random.randint(0,9))
+    sc = random.choice(special_character)
+    words = word1.title() + word2.title() + sc
+    words = list(words)
+    words.append(number)
+    random.shuffle(words)
+
+    await ctx.send(f'{"".join(words)}')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
