@@ -138,6 +138,8 @@ def youtube_search(query):
         return f'https://youtu.be/{video_id}'
 
 def check_ban(id):
+    if not REDIS:
+        return False
     data = r.get(str(id))
     output = True if data else False
     return output
@@ -363,7 +365,7 @@ async def fortune(ctx, sign):
         response = template.format(**prediction_data)
     await ctx.send(response)
 
-@bot.command()
+@bot.command(help="Con este comando puedes revisar los contagiados, muertos y recuperados por Covid-19 en Chile.")
 async def covid(ctx):
     req = requests.get(url = COVID_URL)
     response = req.json()
@@ -1257,7 +1259,7 @@ async def update_record(ctx, *, options):
     else:
         await ctx.send('🤖 Actualizado')
 
-@bot.command()
+@bot.command(aliases= ['traidor'])
 async def pikasen(ctx, *, query):
     try:
         await ctx.message.add_reaction('😏')
