@@ -1263,7 +1263,7 @@ async def update_record(ctx, *, options):
 async def pikasen(ctx, *, query):
     try:
         await ctx.message.add_reaction('😏')
-        url = f'{PIKASEN_URL}{query}'
+        url = f'{PIKASEN_URL}{query.replace(" ", "_")}'
         req = requests.get(url = url)
         response = req.json()
         if response:
