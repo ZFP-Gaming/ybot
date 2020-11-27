@@ -380,21 +380,22 @@ async def covid(ctx):
 async def otaku(ctx, *, query):
     req = requests.get(url = ANIME_URL + query)
     response = req.json()
-    found = next(item for item in response['results'] if item['title'].lower() == query.lower())
-
     embed = discord.Embed(
         colour = discord.Colour.purple()
     )
+    try:
+        found = next(item for item in response['results'] if item['title'].lower() == query.lower())
 
-    if found:
-        embed.add_field(name=found['title'], value=f':star: {found["score"]}', inline=True)
-        embed.add_field(name=('Capítulos'), value=found["episodes"], inline = True)
-        embed.add_field(name=('Transmitiendo'), value=found["airing"], inline = False)
-        embed.set_image(url=found['image_url'])
-    else:
+        if found:
+            embed.add_field(name=found['title'], value=f':star: {found["score"]}', inline=True)
+            embed.add_field(name=('Capítulos'), value=found["episodes"], inline=True)
+            embed.add_field(name=('Transmitiendo'), value=found["airing"], inline=False)
+            embed.set_image(url=found['image_url'])
+
+    except StopIteration as e:
         embed.add_field(name=response['results'][0]['title'], value=f':star: {response["results"][0]["score"]}', inline=True)
-        embed.add_field(name=('Capítulos'), value=response['results'][0]["episodes"], inline = True)
-        embed.add_field(name=('Transmitiendo'), value= response['results'][0]["airing"], inline=False)
+        embed.add_field(name=('Capítulos'), value=response['results'][0]["episodes"], inline=True)
+        embed.add_field(name=('Transmitiendo'), value=response['results'][0]["airing"], inline=False)
         embed.set_image(url=response['results'][0]['image_url'])
 
     await ctx.send(embed=embed)
