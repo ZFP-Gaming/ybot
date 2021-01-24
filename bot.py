@@ -189,6 +189,13 @@ async def on_message(message):
     if check_ban(message.author.id):
         return
     msg = message.content.split(' ')
+
+    otaku_commands = ['$waifu', '$wa', '$husbando', '$wg', '$w']
+    if (msg[0] in otaku_commands) and message.channel.name == 'general':
+        await message.channel.send('Acá no, perkin')
+        await message.channel.send('https://i.kym-cdn.com/photos/images/newsfeed/001/214/706/171.png')
+        value = manage_karma(message.author.id, -1)
+        await message.channel.send(f'{message.author.name} tiene {value} karma')
     if ('++' in msg  or '--' in msg  ) and message.mentions:
         user = message.mentions[0].id
         author = message.author.id
