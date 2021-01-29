@@ -65,6 +65,7 @@ ACCESS_DENIED = 'https://media.giphy.com/media/3ohzdYt5HYinIx13ji/giphy.gif'
 PIKASEN_URL = os.getenv('PIKASEN_URL')
 PIKASEN_CDN = os.getenv('PIKASEN_CDN')
 REDIS = os.getenv('REDIS')
+REDIS_URL = os.getenv('REDIS_URL')
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -77,7 +78,7 @@ intros = db.bot.intros
 settings = db.bot.settings
 wikipedia.set_lang("es")
 if REDIS:
-    r = redis.Redis(host='localhost', port=6379, db=0)
+    r = redis.Redis(host=REDIS_URL, port=6379, db=0)
 
 intents = discord.Intents.default()
 intents.members = True
