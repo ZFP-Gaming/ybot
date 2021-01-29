@@ -1,6 +1,6 @@
 # Ybot
 
-## Dependencias: - [Docker] (https://docs.docker.com/docker-for-windows/install/)
+## Dependencias: - [Docker](https://docs.docker.com/docker-for-windows/install/)
 
 ## Instalación:
 
