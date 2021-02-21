@@ -1404,6 +1404,61 @@ async def newspaper(ctx, news_source):
         await ctx.send('No tengo ese diario, las opciones actuales son:')
         await ctx.send(f'{", ".join(newspapers.keys())}')
 
+@bot.command()
+async def cachipun(ctx, monedas, objeto):
+    id = ctx.message.author.id
+    user = ctx.message.author
+    data = inv.find_one({'id':id})
+    moneda_data = data['monedas']
+    monedas = int(monedas)
+    moneda_data = int(moneda_data)
+    if data:
+        if monedas > 0:
+            if monedas < moneda_data:
+                if ctx.message.channel.name == "qa":
+                    ppt = ['piedra', 'papel', 'tijera']
+                    eleccion = random.choice(ppt)
+                    if objeto.lower() == 'piedra':
+                        if eleccion == 'piedra':
+                            await ctx.send('Ah bueno, empatamos. Te quedas con las monedas que apostaste.')
+                        if eleccion == 'papel':
+                            await ctx.send('HAHAHA te gane. Me quedo con tus monedas 🤑')
+                            moneda_final = moneda_data - monedas
+                            inv.update_one({'id': id}, {'$set': {'monedas': moneda_final}})
+                        if eleccion == 'tijera':
+                            await ctx.send('NOOOOOOOOOO!! me has ganado. Te duplico las monedas que apostaste')
+                            moneda_final = moneda_data + monedas
+                            inv.update_one({'id': id}, {'$set': {'monedas': moneda_final}})
+                    if objeto.lower() == 'papel':
+                        if eleccion == 'piedra':
+                            await ctx.send('Viejo curao 😠 ganaste, premio para ti.')
+                            moneda_final = moneda_data + monedas
+                            inv.update_one({'id': id}, {'$set': {'monedas': moneda_final}})
+                        if eleccion == 'papel':
+                            await ctx.send('Empatamos pero ya vas a ver chupetin.')
+                        if eleccion == 'tijera':
+                            await ctx.send('BOOM shakalaka, tus monedas son mias.')
+                            moneda_final = moneda_data - monedas
+                            inv.update_one({'id': id}, {'$set': {'monedas': moneda_final}})
+                    if objeto.lower() == 'tijera':
+                        if eleccion == 'piedra':
+                            await ctx.send('Osi osi nena! las apuestas no son lo tuyo.')
+                            moneda_final = moneda_data - monedas
+                            inv.update_one({'id': id}, {'$set': {'monedas': moneda_final}})
+                        if eleccion == 'papel':
+                            await ctx.send('En serio?!?! ta chitado manito, monedas dobles para ti.')
+                            moneda_final = moneda_data + monedas
+                            inv.update_one({'id': id}, {'$set': {'monedas': moneda_final}})
+                        if eleccion == 'tijera':
+                            await ctx.send('Ñee que fome empatar, chau.')
+                else:
+                    await ctx.send('Intentalo en el canal de farmeo, este no es un lugar muy bonito para hacer eso.')
+            else:
+                await ctx.send('Alto ahi vaca, estas apostando monedas que no tienes.')
+        else:
+            await ctx.send('En serio? monedas negativas? tonton.')
+    else:
+        await ctx.send('No tienes monedas 😔 usa el comando "monedas" para obtener unas pocas.')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
