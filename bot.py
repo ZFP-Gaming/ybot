@@ -935,32 +935,6 @@ async def clase(ctx):
     await ctx.send('Puedes elegir tu clase con el comando "y elegir".\n1. Guerrero\n2. Arquero\n3. Huaso')
 
 @bot.command()
-async def elegir(ctx, clase):
-    id = ctx.message.author.id
-    data = inv.find_one({'id':id})
-    if data:
-        await ctx.send('Ya tienes un personaje creado. Si quieres empezar uno nuevo, elimina tu personaje con el comando "y eliminar".')
-    else:
-        if clase.lower() == 'guerrero':
-            inv.insert_one({'id':id, 'personaje':'Guerrero', 'cabeza':'yelmo nivel 1', 'cuerpo':'peto de malla nivel 1',  'manos':'brazales nivel 1', 'piernas':'grebas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'espada de madera', 'arma secundaria':'escudo de madera'})
-            await ctx.send(f'Felicidades! Ya eres un Guerrero.\nSe agregó a tu inventario lo siguiente:\n-Yelmo nivel 1\n-Peto de malla nivel 1\n-Brazales nivel 1\n-Grebas nivel 1\n-Botas nivel 1\n-Espada de madera\n-Escudo de madera')
-        if clase.lower() == 'arquero':
-            inv.insert_one({'id':id, 'personaje':'Arquero', 'cabeza':'capucha nivel 1', 'cuerpo':'peto de cuero nivel 1',  'manos':'guantes nivel 1', 'piernas':'piernas nivel 1', 'pies':'botas nivel 1', 'arma primaria':'arco nivel 1', 'arma secundaria':'carcaj nivel 1'})
-            await ctx.send(f'Felicidades! Ya eres un Arquero.\nSe agregó a tu inventario lo siguiente:\n-Capucha nivel 1\n-Peto de cuero nivel 1\n-Guantes nivel 1\n-Piernas nivel 1\n-Botas nivel 1\n-Arco nivel 1\n-Carcaj nivel 1')
-        if clase.lower() == 'huaso':
-            inv.insert_one({'id':id, 'personaje':'Huaso', 'cabeza':'chupalla nivel 1', 'cuerpo':'manta de huaso nivel 1', 'manos':'pañuelo nivel 1', 'piernas':'pantalones de huaso nivel 1', 'pies':'botas de huaso nivel 1', 'arma primaria':'empanada', 'arma secundaria':'anticucho'})
-            await ctx.send(f'Felicidades! Ya eres un Huaso.\nSe agrego a tu inventario lo siguiente:\n-Chupalla nivel 1\n-Manta de huaso nivel 1\n-Pañuelo nivel 1\n-Pantalones de huaso nivel 1\n-Botas de huaso nivel 1\n-Empanada\n-Anticucho')
-
-@bot.command()
-async def personaje(ctx):
-    id = ctx.message.author.id
-    data = inv.find_one({'id':id})
-    if data:
-        await ctx.send(f'Tu personaje es clase {data["personaje"]}')
-    else:
-        await ctx.send('No tienes ningun personaje. Crea uno con el comando "y elegir".')
-
-@bot.command()
 @commands.cooldown(1, 300, commands.BucketType.user)
 async def monedas(ctx):
     id = ctx.message.author.id
@@ -1015,31 +989,6 @@ async def robar(ctx):
 
             await ctx.send(f'Robar es malo compare, piensa lo que haces. Te quito karma por pao. Tienes {data2["karma"]} karma.')
 
-@bot.command()
-async def eliminar(ctx):
-    id = ctx.message.author.id
-    inv.delete_one({'id':id})
-
-    await ctx.send('Tu personaje ha sido eliminado del mundo ZFP.')
-
-objetos.remove()
-objetos.insert_one({'nombre':'espada nivel 1', 'daño':5, 'elemento':'neutro'})
-objetos.insert_one({'nombre':'arco', 'daño':6, 'elemento':'neutro'})
-objetos.insert_one({'nombre':'escudo de madera', 'defensa':3, 'resistencia':'neutro'})
-objetos.insert_one({'nombre':'carcaj', 'daño':2, 'elemento':'neutro'})
-
-@bot.command()
-async def arma(ctx, *nombre):
-    data = objetos.find_one({'nombre':nombre})
-    #await ctx.send(f'Daño: {data["daño"]}\nElemento: {data["elemento"]}')
-    await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
-
-@bot.command()
-async def armadura(ctx, *nombre):
-    data = objetos.find_one({'nombre':nombre})
-    #await ctx.send(f'Defensa: {data["defensa"]}\nResistencia: {data["resistencia"]}')
-    await ctx.send('Este comando aun esta en construccion. Recuerda que estas en la version Alpha de World of ZFP')
-
 @bot.command(name='bot')
 async def bot_avatar(ctx, *word):
     bot_name = urllib.parse.quote_plus(ctx.message.author.nick)
@@ -1076,29 +1025,6 @@ async def rezar(ctx):
         await ctx.send(f'Lo lograste, eres un pan de Dios. Te ilumino con 1 karma. Tienes {data["karma"]} de karma.')
     else:
         await ctx.send('Te falta fe hijo del diaulo, vuelve cuando aprendas a rezar.')
-
-@bot.command()
-async def comprar(ctx, cantidad, objeto):
-    id = ctx.message.author.id
-    dataMembers = members.find_one({'id':id})
-    dataInv = inv.find_one({'id':id})
-    cantidad = int(cantidad)
-    if cantidad >= 0:
-        if objeto.lower() == 'karma':
-            precio = cantidad * 500
-            if dataInv['monedas'] >= precio:
-                nuevas_monedas = dataInv['monedas'] - precio
-                inv.update_one({'id':id}, {'$set': {'monedas':nuevas_monedas}})
-                nuevo_karma = dataMembers['karma'] + cantidad
-                members.update_one({'id':id}, {'$set': {'karma':nuevo_karma}})
-
-                await ctx.send(f'Tu compra ha sido un exito! te quedaron {nuevas_monedas} monedas y ahora tienes {nuevo_karma} puntos de karma.')
-            else:
-                await ctx.send(f'No tienes las monedas suficientes para comprar {cantidad} puntos de karma.')
-        else:
-            await ctx.send('Creo que no tengo ese objeto a la venta, pero se lo pedire a los chinos.')
-    else:
-        await ctx.send('Numeros negativos? entero logi pao ql')
 
 @bot.command()
 async def volume(ctx, value):
@@ -1459,6 +1385,15 @@ async def cachipun(ctx, monedas, objeto):
             await ctx.send('En serio? monedas negativas? tonton.')
     else:
         await ctx.send('No tienes monedas 😔 usa el comando "monedas" para obtener unas pocas.')
+
+@bot.command(aliases = ['inv'])
+async def inventario(ctx):
+    id = ctx.message.author.id
+    data = inv.find_one({'id':id})
+    if data:
+        await ctx.send(f'Tienes {data["monedas"]} monedas 💰')
+    else:
+        await ctx.send('Creo que no tienes nada en tu bolsa.')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
