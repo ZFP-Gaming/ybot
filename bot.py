@@ -1340,7 +1340,7 @@ async def cachipun(ctx, monedas, objeto):
     moneda_data = int(moneda_data)
     if data:
         if monedas > 0:
-            if monedas =< moneda_data:
+            if monedas <= moneda_data:
                 if ctx.message.channel.name == "farmeo":
                     ppt = ['piedra', 'papel', 'tijera']
                     eleccion = random.choice(ppt)
