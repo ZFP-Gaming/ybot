@@ -1391,7 +1391,10 @@ async def inventario(ctx):
     id = ctx.message.author.id
     data = inv.find_one({'id':id})
     if data:
-        await ctx.send(f'Tienes:\n-{data["monedas"]} monedas 💰\n-{data["madera"]} maderas 🪓')
+        if 'monedas' and 'madera' and 'roca' in data:
+            await ctx.send(f'Tienes:\n-{data["monedas"]} monedas 💰\n-{data["madera"]} maderas 🪓\n-{data["roca"]} rocas')
+        else:
+            await ctx.send('Cuando tengas monedas, madera y rocas en tu inventario, te mostrare todo.')
     else:
         await ctx.send('Creo que no tienes nada en tu bolsa.')
 
@@ -1423,14 +1426,14 @@ async def minar(ctx):
     numero = random.randint(1,3)
     if ctx.message.channel.name == 'farmeo':
         if data:
-            if 'mineral' in data:
-                nueva_mineral = data['mineral'] + numero
-                inv.update_one({'id':id}, {'$set': {'mineral':nueva_mineral}})
-                mineral = nueva_mineral
+            if 'roca' in data:
+                nueva_roca = data['roca'] + numero
+                inv.update_one({'id':id}, {'$set': {'roca':nueva_roca}})
+                roca = nueva_roca
             else:
-                inv.update_one({'id':id}, {'$set': {'mineral':numero}})  
+                inv.update_one({'id':id}, {'$set': {'roca':numero}})  
         else:
-            inv.insert_one({'id': id, 'mineral': numero})
+            inv.insert_one({'id': id, 'roca': numero})
         await ctx.send(f'Minaste {numero} rocas.')
     else:
         await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
