@@ -1391,9 +1391,28 @@ async def inventario(ctx):
     id = ctx.message.author.id
     data = inv.find_one({'id':id})
     if data:
-        await ctx.send(f'Tienes {data["monedas"]} monedas 💰')
+        await ctx.send(f'Tienes:\n-{data["monedas"]} monedas 💰\n-{data["madera"]} maderas 🪓')
     else:
         await ctx.send('Creo que no tienes nada en tu bolsa.')
 
+@bot.command()
+async def talar(ctx):
+    id = ctx.message.author.id
+    data = inv.find_one({'id':id})
+    numero = random.randint(1,3)
+    if ctx.message.channel.name == 'farmeo':
+        if data:
+            if 'madera' in data:
+                nueva_madera = data['madera'] + numero
+                inv.update_one({'id':id}, {'$set': {'madera':nueva_madera}})
+                madera = nueva_madera
+            else:
+                inv.update_one({'id':id}, {'$set': {'madera':numero}})  
+        else:
+            inv.insert_one({'id': id, 'madera': numero})
+        await ctx.send(f'Talaste {numero} madera normal')
+    else:
+        await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
+            
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
