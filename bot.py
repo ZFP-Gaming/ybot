@@ -1434,7 +1434,7 @@ async def minar(ctx):
                 inv.update_one({'id':id}, {'$set': {'roca':numero}})  
         else:
             inv.insert_one({'id': id, 'roca': numero})
-        await ctx.send(f'Minaste {numero} rocas.')
+        await ctx.send(f'Minaste {numero} rocas ⛏️')
     else:
         await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
             
