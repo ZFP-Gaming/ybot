@@ -1396,6 +1396,7 @@ async def inventario(ctx):
         await ctx.send('Creo que no tienes nada en tu bolsa.')
 
 @bot.command()
+@commands.cooldown(1, 300, commands.BucketType.user)
 async def talar(ctx):
     id = ctx.message.author.id
     data = inv.find_one({'id':id})
@@ -1411,6 +1412,26 @@ async def talar(ctx):
         else:
             inv.insert_one({'id': id, 'madera': numero})
         await ctx.send(f'Talaste {numero} madera normal')
+    else:
+        await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
+
+@bot.command()
+@commands.cooldown(1, 300, commands.BucketType.user)
+async def minar(ctx):
+    id = ctx.message.author.id
+    data = inv.find_one({'id':id})
+    numero = random.randint(1,3)
+    if ctx.message.channel.name == 'farmeo':
+        if data:
+            if 'mineral' in data:
+                nueva_mineral = data['mineral'] + numero
+                inv.update_one({'id':id}, {'$set': {'mineral':nueva_mineral}})
+                mineral = nueva_mineral
+            else:
+                inv.update_one({'id':id}, {'$set': {'mineral':numero}})  
+        else:
+            inv.insert_one({'id': id, 'mineral': numero})
+        await ctx.send(f'Minaste {numero} rocas.')
     else:
         await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
             
