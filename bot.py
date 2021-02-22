@@ -1440,6 +1440,25 @@ async def minar(ctx):
 
 @bot.command()
 async def nya(ctx):
-    await ctx.send('nyanyame nyanyajyu nyanya-do no nyarabi de nyakunyaku inyanyaku nyanyahan nyanya-dai nyannyaku nyarabete nyaganyagame')            
+    await ctx.send('nyanyame nyanyajyu nyanya-do no nyarabi de nyakunyaku inyanyaku nyanyahan nyanya-dai nyannyaku nyarabete nyaganyagame')
+    await ctx.send('https://pa1.narvii.com/6151/7d3b92d97a9e694d2c7a3ea696eadeb79988821d_hq.gif')
+
+@bot.command(name='thisman')
+async def thisman(ctx, user: discord.Member = None):
+    if user == None:
+        user = ctx.author
+    thisman = Image.open("./images/thisman.jpeg")
+
+    user_avatar = user.avatar_url_as(format='png', size=128)
+    data = BytesIO(await user_avatar.read())
+    avatar = Image.open(data).convert('RGBA')
+    avatar = avatar.resize((175, 210))
+    img_bw = avatar.copy()
+    img_bw = img_bw.convert('L')
+    thisman.paste(img_bw, (175, 210), mask=avatar)
+
+    thisman.save("profile.png", 'PNG')
+    await ctx.send(file = discord.File("profile.png"))
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
