@@ -1437,6 +1437,9 @@ async def minar(ctx):
         await ctx.send(f'Minaste {numero} rocas ⛏️')
     else:
         await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
-            
+
+@bot.command()
+async def nya(ctx):
+    await ctx.send('nyanyame nyanyajyu nyanya-do no nyarabi de nyakunyaku inyanyaku nyanyahan nyanya-dai nyannyaku nyarabete nyaganyagame')            
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
