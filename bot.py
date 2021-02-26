@@ -1460,5 +1460,15 @@ async def thisman(ctx, user: discord.Member = None):
     thisman.save("profile.png", 'PNG')
     await ctx.send(file = discord.File("profile.png"))
 
+@bot.command()
+async def mimic(ctx, member: discord.Member, *, message=None):
+    print(f'{ctx.author.name} is impersonating {member.name}')
+    webhook = await ctx.channel.create_webhook(name=member.name)
+    await webhook.send(str(message), username=member.name, avatar_url=member.avatar_url)
+
+    webhooks = await ctx.channel.webhooks()
+    for webhook in webhooks:
+        await webhook.delete()
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
