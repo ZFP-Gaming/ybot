@@ -147,16 +147,17 @@ def check_ban(id):
 
 @bot.event
 async def on_member_join(member):
-    toque = Image.open('./images/toque.png')
-    avatar = member.avatar_url_as(format='png', size=128)
-    data = BytesIO(await avatar.read())
-    img = Image.open(data)
-    img = img.resize((295,271))
-    toque.paste(img, (790, 133))
-    toque.save("profile.png", 'PNG')
-    channel = discord.utils.get(member.guild.channels, name="bienvenida")
-    await channel.send(f"Bienvenido, {member.mention}, al mundo de ZFP!")
-    await channel.send(file = discord.File("profile.png"))
+    if member.bot == False:
+        toque = Image.open('./images/toque.png')
+        avatar = member.avatar_url_as(format='png', size=128)
+        data = BytesIO(await avatar.read())
+        img = Image.open(data)
+        img = img.resize((295,271))
+        toque.paste(img, (790, 133))
+        toque.save("profile.png", 'PNG')
+        channel = discord.utils.get(member.guild.channels, name="bienvenida")
+        await channel.send(f"Bienvenido, {member.mention}, al mundo de ZFP!")
+        await channel.send(file = discord.File("profile.png"))
 
 @bot.event
 async def on_ready():
