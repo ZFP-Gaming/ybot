@@ -1412,7 +1412,7 @@ async def talar(ctx):
                 inv.update_one({'id':id}, {'$set': {'madera':nueva_madera}})
                 madera = nueva_madera
             else:
-                inv.update_one({'id':id}, {'$set': {'madera':numero}})  
+                inv.update_one({'id':id}, {'$set': {'madera':numero}})
         else:
             inv.insert_one({'id': id, 'madera': numero})
         await ctx.send(f'Talaste {numero} madera normal')
@@ -1432,7 +1432,7 @@ async def minar(ctx):
                 inv.update_one({'id':id}, {'$set': {'roca':nueva_roca}})
                 roca = nueva_roca
             else:
-                inv.update_one({'id':id}, {'$set': {'roca':numero}})  
+                inv.update_one({'id':id}, {'$set': {'roca':numero}})
         else:
             inv.insert_one({'id': id, 'roca': numero})
         await ctx.send(f'Minaste {numero} rocas ⛏️')
