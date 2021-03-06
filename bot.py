@@ -145,6 +145,15 @@ def check_ban(id):
     output = True if data else False
     return output
 
+def generate_zalgo  (input):
+    char_codes = list(map(chr, range(768, 815)))
+    random_variation = int(random.normalvariate(10, 5))
+    return ''.join(
+        [v, v + ''.join(
+            random.choice(char_codes) for i in range(random_variation))
+        ][v.isalpha()] for v in input
+        )
+
 @bot.event
 async def on_member_join(member):
     if member.bot == False:
@@ -1470,6 +1479,10 @@ async def mimic(ctx, member: discord.Member, *, message=None):
     webhooks = await ctx.channel.webhooks()
     for webhook in webhooks:
         await webhook.delete()
+
+@bot.command(aliases=['zalgo', 'nicomen', 'inframundo'])
+async def zalgofy(ctx, *, message):
+    await ctx.send(generate_zalgo(message))
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
