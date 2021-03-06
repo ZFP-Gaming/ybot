@@ -1195,7 +1195,7 @@ async def update_record(ctx, *, options):
     else:
         await ctx.send('🤖 Actualizado')
 
-@bot.command(aliases= ['traidor'])
+@bot.command()
 async def pikasen(ctx, *, query):
     try:
         await ctx.message.add_reaction('😏')
