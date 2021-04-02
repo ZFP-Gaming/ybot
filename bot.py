@@ -1484,5 +1484,16 @@ async def mimic(ctx, member: discord.Member, *, message=None):
 async def zalgofy(ctx, *, message):
     await ctx.send(generate_zalgo(message))
 
+@bot.command()
+async def activity(ctx, *, message):
+    print(f'{ctx.message.author.name} >> {ctx.message.content}')
+    options = message.split(',')
+    activities = {
+        'viendo': discord.ActivityType.watching,
+        'jugando': discord.ActivityType.playing,
+        'escuchando': discord.ActivityType.listening
+    }
+    await bot.change_presence(activity=discord.Activity(type=activities[options[0]], name=options[1]))
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
