@@ -764,13 +764,59 @@ async def sound(ctx, effect):
 
 @bot.command(name='sonidos')
 async def sound_list(ctx):
-    sounds = '```Lista de sonidos disponibles:\n'
     files_path = f'{os.getcwd()}/sounds'
     files_directory = os.listdir(files_path)
-    for file in sorted(files_directory):
-        sounds += f'- {file.split(".")[0]}\n'
-    sounds += '```'
-    await ctx.send(sounds)
+
+    files = sorted(files_directory)
+    page_size = 20
+
+    pages = [files[i: i + page_size] for i in range(0, len(files), page_size)]
+    paginated_content = []
+
+    for page in pages:
+        embed = discord.Embed()
+        sounds_list = '```\n'
+        for file in page:
+            sounds_list += f'- {file.split(".")[0]}\n'
+        sounds_list += '```'
+        embed.add_field(name='🔈 Lista de sonidos disponibles', value=sounds_list, inline=False)
+        paginated_content.append(embed)
+
+    buttons = [u"\u23EA", u"\u2B05", u"\u27A1", u"\u23E9"]
+    current = 0
+    msg = await ctx.send(embed=paginated_content[current])
+
+    for button in buttons:
+        await msg.add_reaction(button)
+
+    while True:
+        try:
+            reaction, user = await bot.wait_for("reaction_add", check=lambda reaction, user: user == ctx.author and reaction.emoji in buttons, timeout=60.0)
+
+        except Exception as e:
+            return print(e)
+
+        else:
+            previous_page = current
+            if reaction.emoji == u"\u23EA":
+                current = 0
+
+            elif reaction.emoji == u"\u2B05":
+                if current > 0:
+                    current -= 1
+
+            elif reaction.emoji == u"\u27A1":
+                if current < len(paginated_content)-1:
+                    current += 1
+
+            elif reaction.emoji == u"\u23E9":
+                current = len(paginated_content)-1
+
+            for button in buttons:
+                await msg.remove_reaction(button, ctx.author)
+
+            if current != previous_page:
+                await msg.edit(embed=paginated_content[current])
 
 @bot.command()
 async def king(ctx):
