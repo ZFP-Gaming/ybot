@@ -14,6 +14,7 @@ import shutil
 import praw
 import matplotlib.pyplot as plt
 import redis
+import asyncio
 
 from os import path
 from os import listdir
@@ -1540,6 +1541,26 @@ async def activity(ctx, *, message):
         'escuchando': discord.ActivityType.listening
     }
     await bot.change_presence(activity=discord.Activity(type=activities[options[0]], name=options[1]))
+
+@bot.command(aliases=['recuerdame', 'recuérdame', 'recordatorio'])
+async def remind(ctx, *, message):
+    words = message.split(' ')
+    time_unit = words[-1]
+    amount = words[-2]
+    if time_unit == 'segundos':
+        seconds = int(amount)
+    elif time_unit == 'minutos':
+        seconds = int(amount) * 60
+    elif time_unit == 'horas':
+        seconds = int(amount) * 60 * 60
+    else:
+        seconds = 0
+        await ctx.send('🤔 no entendí')
+
+    if seconds != 0:
+        await ctx.message.add_reaction('🆗')
+        await asyncio.sleep(seconds)
+        await ctx.send(f'oye {ctx.author.mention}, recuerda {" ".join(words[:-3])}')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
