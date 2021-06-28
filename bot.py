@@ -747,6 +747,7 @@ async def sound(ctx, effect):
                 await channel.connect()
             if ctx.author.voice and ctx.voice_client:
                 vc = ctx.voice_client
+                await ctx.message.delete()
                 if not vc.is_playing():
                     print('Empty queue, playing...')
                     vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
