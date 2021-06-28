@@ -15,6 +15,7 @@ import praw
 import matplotlib.pyplot as plt
 import redis
 import asyncio
+import glob
 
 from os import path
 from os import listdir
@@ -738,9 +739,9 @@ async def stop(ctx):
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
-    sound_effect = f'sounds/{effect}.mp3'
+    sound_effect = list(glob.glob(f'sounds/*{effect}*.mp3'))[0]
     try:
-        if path.exists(sound_effect):
+        if sound_effect and path.exists(sound_effect):
             voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
             if not voice_client:
                 channel = ctx.message.author.voice.channel
