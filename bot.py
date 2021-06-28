@@ -739,7 +739,8 @@ async def stop(ctx):
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
-    sound_effect = list(glob.glob(f'sounds/*{effect}*.mp3'))[0]
+    sound_effect = list(glob.glob(f'sounds/{effect}*.mp3'))[0]
+    print(f'{ctx.message.author} > {sound_effect}')
     try:
         if sound_effect and path.exists(sound_effect):
             voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
