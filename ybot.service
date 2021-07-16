@@ -1,0 +1,13 @@
+[Unit]
+Description=Discord Bot
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/ybot
+ExecStart=/usr/bin/python3 /root/ybot/bot.py
+User=root
+Restart=on-failure
+
+[Install]
+WantedBy=network-online.target

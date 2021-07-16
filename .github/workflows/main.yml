@@ -4,11 +4,11 @@ on:
     branches: [master]
 
 jobs:
-  clone_repo:
+  deploy:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: test ssh connection
+    - name: Deploy bot
       uses: appleboy/ssh-action@v0.1.4
       with:
         host: 45.7.231.47
@@ -18,4 +18,5 @@ jobs:
         script: |
           cd ybot
           git pull origin master
-          git status
+          systemctl restart ybot
+          systemctl status ybot
