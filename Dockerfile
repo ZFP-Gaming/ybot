@@ -1,5 +1,5 @@
 FROM python:latest
 
-COPY . /app
 WORKDIR /app
+COPY . ./
 RUN pip install -r requirements.txt
