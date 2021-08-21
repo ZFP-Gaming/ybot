@@ -86,7 +86,7 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ', intents=intents)
-bot.volume = 0.01
+bot.volume = 0.2
 
 reddit = praw.Reddit(
     client_id=REDDIT_ID,
