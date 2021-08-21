@@ -178,7 +178,7 @@ async def on_ready():
         'porno de enanos',
         'a la Coty haciendo origami',
         'al Nete trabajando',
-        'al Fabián cornerchopeando'
+        'al Fabián cornershopeando'
     ]
     actividad = [
         '1',
@@ -243,6 +243,12 @@ async def on_voice_state_update(member, before, after):
                     voice_client.source.volume = bot.volume
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
+            else:
+                if voice_client is None:
+                    roles = [o.name for o in member.roles]
+                    if ('ficha' in roles):
+                        channel = after.channel
+                        await channel.connect()
         if after.channel is None:
             voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
             if voice_client and voice_client.channel == before.channel:
@@ -1564,6 +1570,14 @@ async def remind(ctx, *, message):
         await ctx.message.add_reaction('🆗')
         await asyncio.sleep(seconds)
         await ctx.send(f'oye {ctx.author.mention}, recuerda {" ".join(words[:-3])}')
+
+@bot.command(aliases=['ficha'])
+async def summon_bot(ctx):
+    member = ctx.message.author
+    role = discord.utils.get(ctx.message.guild.roles, name = "ficha")
+    channel = discord.utils.get(ctx.guild.channels, name="general")
+    await member.add_roles(role)
+    await channel.send(f'{member.mention} se cree ficha')
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
