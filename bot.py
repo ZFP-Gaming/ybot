@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import redis
 import asyncio
 import glob
+import subprocess
 
 from os import path
 from os import listdir
@@ -1578,6 +1579,15 @@ async def summon_bot(ctx):
     channel = discord.utils.get(ctx.guild.channels, name="general")
     await member.add_roles(role)
     await channel.send(f'{member.mention} se cree ficha')
+
+@bot.command()
+async def restart(ctx):
+    roles = [o.name for o in ctx.message.author.roles]
+    if '💻 dev' in roles:
+        subprocess.run(["systemctl", "restart", "ybot"])
+        await ctx.send("🆗")
+    else:
+        await ctx.send(ACCESS_DENIED)
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
