@@ -1587,5 +1587,23 @@ async def restart(ctx):
     else:
         await ctx.send(ACCESS_DENIED)
 
+@bot.command(aliases=['contratar'])
+async def hire(ctx):
+    if ctx.message.author.id == 121417708469223428:
+        role = discord.utils.get(ctx.message.guild.roles, name = "recorrido")
+        channel = discord.utils.get(ctx.guild.channels, name="general")
+        member = ctx.message.mentions[0]
+        await member.add_roles(role)
+        await channel.send(f'🚌 {member.mention} 🤗')
+
+@bot.command(aliases=['despedir'])
+async def fire(ctx):
+    if ctx.message.author.id == 121417708469223428:
+        role = discord.utils.get(ctx.message.guild.roles, name = "recorrido")
+        channel = discord.utils.get(ctx.guild.channels, name="general")
+        member = ctx.message.mentions[0]
+        await member.remove_roles(role)
+        await channel.send(f'🥾💥 {member.mention}')
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
