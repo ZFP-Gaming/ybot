@@ -1591,7 +1591,7 @@ async def restart(ctx):
 async def hire(ctx):
     if ctx.message.author.id == 121417708469223428:
         role = discord.utils.get(ctx.message.guild.roles, name = "recorrido")
-        channel = discord.utils.get(ctx.guild.channels, name="general")
+        channel = discord.utils.get(ctx.guild.channels, name="recorrido")
         member = ctx.message.mentions[0]
         await member.add_roles(role)
         await channel.send(f'🚌 {member.mention} 🤗')
@@ -1600,7 +1600,7 @@ async def hire(ctx):
 async def fire(ctx):
     if ctx.message.author.id == 121417708469223428:
         role = discord.utils.get(ctx.message.guild.roles, name = "recorrido")
-        channel = discord.utils.get(ctx.guild.channels, name="general")
+        channel = discord.utils.get(ctx.guild.channels, name="recorrido")
         member = ctx.message.mentions[0]
         await member.remove_roles(role)
         await channel.send(f'🥾💥 {member.mention}')
