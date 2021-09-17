@@ -95,6 +95,9 @@ reddit = praw.Reddit(
     user_agent="ybot"
 )
 
+# Cogs loading sequence
+bot.load_extension("cogs.role_management")
+
 queue = []
 
 def manage_karma(id, amount):
@@ -1586,38 +1589,6 @@ async def restart(ctx):
         await ctx.send("🆗")
     else:
         await ctx.send(ACCESS_DENIED)
-
-@bot.command(aliases=['contratar'])
-async def hire(ctx):
-    if ctx.message.author.id == 121417708469223428:
-        role = discord.utils.get(ctx.message.guild.roles, name = "recorrido")
-        channel = discord.utils.get(ctx.guild.channels, name="recorrido")
-        member = ctx.message.mentions[0]
-        await member.add_roles(role)
-        await channel.send(f'🚌 {member.mention} 🤗')
-
-@bot.command(aliases=['despedir'])
-async def fire(ctx):
-    if ctx.message.author.id == 121417708469223428:
-        role = discord.utils.get(ctx.message.guild.roles, name = "recorrido")
-        channel = discord.utils.get(ctx.guild.channels, name="recorrido")
-        member = ctx.message.mentions[0]
-        await member.remove_roles(role)
-        await channel.send(f'🥾💥 {member.mention}')
-
-@bot.command(aliases=['magia'])
-async def tcg_add(ctx):
-    if ctx.message.author.id == 364613350623281164:
-        role = discord.utils.get(ctx.message.guild.roles, name = "tcg-flip")
-        member = ctx.message.mentions[0]
-        await member.add_roles(role)
-
-@bot.command(aliases=['antimagia'])
-async def tcg_remove(ctx):
-    if ctx.message.author.id == 364613350623281164:
-        role = discord.utils.get(ctx.message.guild.roles, name = "tcg-flip")
-        member = ctx.message.mentions[0]
-        await member.remove_roles(role)
 
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
