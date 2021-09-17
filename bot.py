@@ -1605,5 +1605,19 @@ async def fire(ctx):
         await member.remove_roles(role)
         await channel.send(f'🥾💥 {member.mention}')
 
+@bot.command(aliases=['magia'])
+async def tcg_add(ctx):
+    if ctx.message.author.id == 364613350623281164:
+        role = discord.utils.get(ctx.message.guild.roles, name = "tcg-flip")
+        member = ctx.message.mentions[0]
+        await member.add_roles(role)
+
+@bot.command(aliases=['antimagia'])
+async def tcg_remove(ctx):
+    if ctx.message.author.id == 364613350623281164:
+        role = discord.utils.get(ctx.message.guild.roles, name = "tcg-flip")
+        member = ctx.message.mentions[0]
+        await member.remove_roles(role)
+
 print('CHORIZA ONLINE')
 bot.run(TOKEN)
