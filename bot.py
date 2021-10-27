@@ -17,6 +17,7 @@ import redis
 import asyncio
 import glob
 import subprocess
+import i18n
 
 from os import path
 from os import listdir
@@ -69,6 +70,9 @@ PIKASEN_URL = os.getenv('PIKASEN_URL')
 PIKASEN_CDN = os.getenv('PIKASEN_CDN')
 REDIS = os.getenv('REDIS')
 REDIS_URL = os.getenv('REDIS_URL')
+
+i18n.load_path.append('./translations')
+i18n.set('locale', 'es')
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -151,7 +155,7 @@ def check_ban(id):
     output = True if data else False
     return output
 
-def generate_zalgo  (input):
+def generate_zalgo(input):
     char_codes = list(map(chr, range(768, 815)))
     random_variation = int(random.normalvariate(10, 5))
     return ''.join(
@@ -1590,5 +1594,5 @@ async def restart(ctx):
     else:
         await ctx.send(ACCESS_DENIED)
 
-print('CHORIZA ONLINE')
+print(i18n.t('base.start'))
 bot.run(TOKEN)
