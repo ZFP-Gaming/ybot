@@ -182,11 +182,11 @@ async def on_member_join(member):
 async def on_ready():
     viendo = [
         'manquear al Darío',
-        'al número 1 del cba',
         'porno de enanos',
-        'a la Coty haciendo origami',
+        'porno de enanos albinos',
+        'porno de enanos albinos con labio leporino',
         'al Nete trabajando',
-        'al Fabián cornershopeando'
+        'al Flipito regalar horas'
     ]
     actividad = [
         '1',
@@ -194,10 +194,10 @@ async def on_ready():
     ]
     escuchar = [
         'Rock pesado lml',
-        'Bad Bunny',
+        'Marcianeke',
         'chinos cochinos',
         'openings de animes',
-        'cumbia villera'
+        'como retan a Flipito'
     ]
     elegir = random.choice(actividad)
     if elegir == '1':
@@ -339,11 +339,12 @@ async def putea(ctx, *, name):
         'deja de dar dislikes tonto wn',
         'maldito sapo conchetumare',
         'chupala meando',
-        'prepara las nalgas porque te voy a dejar como bambi'
+        'prepara las nalgas porque te voy a dejar como bambi',
+        'a tu mamá le quedan malas las cazuelas'
     ]
     await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
 
-@bot.command(aliases=['hola', 'ola', 'holas', 'olas', 'wenas', 'wena'])
+@bot.command(aliases=['hola', 'ola', 'holas', 'olas', 'wenas', 'wena', 'holanda'])
 async def greet(ctx):
     greetings = [
         'olas :ocean:',
@@ -376,7 +377,8 @@ async def pregunta(ctx):
         'Mi respuesta es no',
         'Mis fuentes me dicen que no',
         'Las perspectivas no son buenas',
-        'Muy dudoso'
+        'Muy dudoso',
+        'Yo no volveria a confiar'
     ]
     await ctx.send(random.choice(answer))
 
@@ -384,7 +386,7 @@ async def pregunta(ctx):
 async def fortune(ctx, sign):
     req = requests.get(url = YOLI_URL)
     prediction = req.json()['horoscopo']
-    response = 'Ese no es un signo válido'
+    response = 'A que wea le está haciendo hermanito, no cacho ese signo'
     if sign in prediction:
         prediction_data = {
             "love": prediction[sign]['amor'],
