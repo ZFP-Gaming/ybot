@@ -101,6 +101,7 @@ reddit = praw.Reddit(
 
 # Cogs loading sequence
 bot.load_extension("cogs.role_management")
+bot.load_extension("cogs.utilities")
 
 queue = []
 
@@ -310,19 +311,6 @@ async def karma_ranking(ctx):
         ranking = ranking + f'{formatted_counter} {filtered_members[i]["name"]}: {formatted_karma}\n'
     embed.add_field(name='Ranking de karma', value=ranking, inline=False)
     await ctx.send(embed=embed)
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f'pong {int(bot.latency * 1000)}ms')
-
-@bot.command(name='random')
-async def random_choice(ctx, options):
-    selected = random.choice(options.split(','))
-    await ctx.send(f':game_die: {selected}')
-
-@bot.command()
-async def info(ctx):
-    await ctx.send(ctx.guild)
 
 @bot.command(name='habla')
 async def say(ctx, *, message):
