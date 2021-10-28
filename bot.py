@@ -41,7 +41,6 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
 COVID_URL = os.getenv('COVID_URL')
-ANIME_URL = os.getenv('ANIME_URL')
 INUTIL_URL = os.getenv('INUTIL_URL')
 GSE_KEY = os.getenv('GSE_KEY')
 GSE_ID = os.getenv('GSE_ID')
@@ -49,9 +48,6 @@ GSE_ID_NSFW = os.getenv('GSE_ID_NSFW')
 GSE_KEY_NSFW = os.getenv('GSE_KEY_NSFW')
 SEARCH_URL = os.getenv('SEARCH_URL')
 YOUTUBE_URL = os.getenv('YOUTUBE_URL')
-EXCHANGE_APP_ID = os.getenv('EXCHANGE_APP_ID')
-EXCHANGE_URL = os.getenv('EXCHANGE_URL')
-UTM_URL = os.getenv('UTM_URL')
 IMDB_URL = os.getenv('IMDB_URL')
 IMDB_KEY = os.getenv('IMDB_KEY')
 LOL_URL = os.getenv('LOL_URL')
@@ -101,6 +97,9 @@ reddit = praw.Reddit(
 
 # Cogs loading sequence
 bot.load_extension("cogs.role_management")
+bot.load_extension("cogs.utilities")
+bot.load_extension("cogs.money")
+bot.load_extension("cogs.otaku")
 
 queue = []
 
@@ -311,19 +310,6 @@ async def karma_ranking(ctx):
     embed.add_field(name='Ranking de karma', value=ranking, inline=False)
     await ctx.send(embed=embed)
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f'pong {int(bot.latency * 1000)}ms')
-
-@bot.command(name='random')
-async def random_choice(ctx, options):
-    selected = random.choice(options.split(','))
-    await ctx.send(f':game_die: {selected}')
-
-@bot.command()
-async def info(ctx):
-    await ctx.send(ctx.guild)
-
 @bot.command(name='habla')
 async def say(ctx, *, message):
     print(f'{ctx.message.author.name} >> {ctx.message.content}')
@@ -407,30 +393,6 @@ async def covid(ctx):
     deaths = response['deaths']['value']
     covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
     await covid_data.add_reaction('\U0001F1EB')
-
-@bot.command(aliases = ['anime'])
-async def otaku(ctx, *, query):
-    req = requests.get(url = ANIME_URL + query)
-    response = req.json()
-    embed = discord.Embed(
-        colour = discord.Colour.purple()
-    )
-    try:
-        found = next(item for item in response['results'] if item['title'].lower() == query.lower())
-
-        if found:
-            embed.add_field(name=found['title'], value=f':star: {found["score"]}', inline=True)
-            embed.add_field(name=('Capítulos'), value=found["episodes"], inline=True)
-            embed.add_field(name=('Transmitiendo'), value=found["airing"], inline=False)
-            embed.set_image(url=found['image_url'])
-
-    except StopIteration as e:
-        embed.add_field(name=response['results'][0]['title'], value=f':star: {response["results"][0]["score"]}', inline=True)
-        embed.add_field(name=('Capítulos'), value=response['results'][0]["episodes"], inline=True)
-        embed.add_field(name=('Transmitiendo'), value=response['results'][0]["airing"], inline=False)
-        embed.set_image(url=response['results'][0]['image_url'])
-
-    await ctx.send(embed=embed)
 
 @bot.command()
 async def dato(ctx):
@@ -548,20 +510,6 @@ async def youtube(ctx, *, query):
     else:
         await ctx.send('No encontré resultados')
 
-@bot.command(aliases=['convierte', 'convertir', 'plata', '$'])
-async def convert(ctx, *, query):
-    values = query.split(' ')
-    amount = int(values[0])
-    currency = values[1].upper()
-    data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
-    usd = data['rates']['USD']
-    base = data['rates']['CLP']
-    target = data['rates'][currency]
-    in_usd = amount / target
-    final = round(base * in_usd)
-    formatted = '{0:,}'.format(final)
-    await ctx.send(f'🏦 {amount} {currency} → ${formatted} CLP')
-
 @bot.command(description='Traduce al idioma de Guru Guru')
 async def guru(ctx, *, text):
     output = []
@@ -600,32 +548,6 @@ async def guru(ctx, *, text):
         output.append(char)
 
     await ctx.send(''.join(output))
-
-@bot.command()
-async def uf(ctx, *, query):
-    req = requests.get(url = UTM_URL)
-    response = req.json()
-    values = query.split(' ')
-    amount = int(values[0])
-    values_uf = response['uf']['valor']
-    total = amount*values_uf
-    total_entero = int(total)
-    formatted = '{0:,}'.format(total_entero)
-
-    await ctx.send(f'🏦 {amount} UF son ${formatted} pesos')
-
-@bot.command()
-async def utm(ctx, *, query):
-    req = requests.get(url = UTM_URL)
-    response = req.json()
-    values = query.split(' ')
-    amount = int(values[0])
-    values_utm = response['utm']['valor']
-    total = amount*values_utm
-    total_entero = int(total)
-    formatted = '{0:,}'.format(total_entero)
-
-    await ctx.send(f'🏦 {amount} UTM son ${formatted} pesos')
 
 @bot.command(aliases=['peli', 'serie'])
 async def imdb(ctx, *, query):
@@ -910,13 +832,6 @@ async def mode(ctx, name):
             await ctx.message.add_reaction('😇')
     else:
         await ctx.send(ACCESS_DENIED)
-
-@bot.command()
-async def pokimon(ctx):
-    base = random.randint(1, 151)
-    face = random.randint(1, 151)
-    url = f'https://images.alexonsager.net/pokemon/fused/{base}/{base}.{face}.png'
-    await ctx.send(url)
 
 @bot.command()
 async def add(ctx):
@@ -1509,11 +1424,6 @@ async def minar(ctx):
         await ctx.send(f'Minaste {numero} rocas ⛏️')
     else:
         await ctx.send('No estas en el canal de farmeo, ve ahi y reintentalo.')
-
-@bot.command()
-async def nya(ctx):
-    await ctx.send('nyanyame nyanyajyu nyanya-do no nyarabi de nyakunyaku inyanyaku nyanyahan nyanya-dai nyannyaku nyarabete nyaganyagame')
-    await ctx.send('https://pa1.narvii.com/6151/7d3b92d97a9e694d2c7a3ea696eadeb79988821d_hq.gif')
 
 @bot.command(name='thisman')
 async def thisman(ctx, user: discord.Member = None):
