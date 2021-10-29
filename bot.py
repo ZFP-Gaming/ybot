@@ -100,6 +100,7 @@ bot.load_extension("cogs.role_management")
 bot.load_extension("cogs.utilities")
 bot.load_extension("cogs.money")
 bot.load_extension("cogs.otaku")
+bot.load_extension("cogs.recruitment")
 
 queue = []
 
