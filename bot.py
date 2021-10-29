@@ -100,7 +100,6 @@ bot.load_extension("cogs.otaku")
 bot.load_extension("cogs.info")
 bot.load_extension("cogs.recruitment")
 
-
 queue = []
 
 def manage_karma(id, amount):
@@ -180,12 +179,12 @@ async def on_member_join(member):
 @bot.event
 async def on_ready():
     viendo = [
-        'manquear al Darío',
-        'porno de enanos',
-        'porno de enanos albinos',
-        'porno de enanos albinos con labio leporino',
-        'al Nete trabajando',
-        'al Flipito regalar horas'
+        i18n.t('base.statuses.a'),
+        i18n.t('base.statuses.b'),
+        i18n.t('base.statuses.c'),
+        i18n.t('base.statuses.d'),
+        i18n.t('base.statuses.e'),
+        i18n.t('base.statuses.f')
     ]
     actividad = [
         '1',
