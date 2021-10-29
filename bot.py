@@ -40,8 +40,6 @@ BAN_TIMEOUT = 10
 TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = os.getenv('BOT_PREFIX')
 YOLI_URL = os.getenv('YOLI_URL')
-COVID_URL = os.getenv('COVID_URL')
-INUTIL_URL = os.getenv('INUTIL_URL')
 GSE_KEY = os.getenv('GSE_KEY')
 GSE_ID = os.getenv('GSE_ID')
 GSE_ID_NSFW = os.getenv('GSE_ID_NSFW')
@@ -55,7 +53,6 @@ LOL_APIKEY = os.getenv('LOL_APIKEY')
 CHAMP_URL = os.getenv('CHAMP_URL')
 MONGO_URL = os.getenv('MONGO_URL')
 DDRAGON_URL = os.getenv('DDRAGON_URL')
-SISMOS_URL = os.getenv('SISMOS_URL')
 UNTAPPD_URL = os.getenv('UNTAPPD_URL')
 UNTAPPD_ID = os.getenv('UNTAPPD_ID')
 UNTAPPD_SECRET = os.getenv('UNTAPPD_SECRET')
@@ -100,7 +97,9 @@ bot.load_extension("cogs.role_management")
 bot.load_extension("cogs.utilities")
 bot.load_extension("cogs.money")
 bot.load_extension("cogs.otaku")
+bot.load_extension("cogs.info")
 bot.load_extension("cogs.recruitment")
+
 
 queue = []
 
@@ -385,25 +384,6 @@ async def fortune(ctx, sign):
         template = '❤️ {love}\n🤒 {health}\n💰 {money}\n🔢 {number}\n🎨 {color}\n'
         response = template.format(**prediction_data)
     await ctx.send(response)
-
-@bot.command(help="Con este comando puedes revisar los contagiados, muertos y recuperados por Covid-19 en Chile.")
-async def covid(ctx):
-    req = requests.get(url = COVID_URL)
-    response = req.json()
-
-    confirmed = response['confirmed']['value']
-    recovered = response['recovered']['value']
-    deaths = response['deaths']['value']
-    covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
-    await covid_data.add_reaction('\U0001F1EB')
-
-@bot.command()
-async def dato(ctx):
-    req = requests.get(url = INUTIL_URL)
-    response = req.json()
-
-    dato = response['text']
-    await ctx.send(dato)
 
 @bot.command()
 async def id(ctx):
@@ -850,17 +830,6 @@ async def add(ctx):
         shutil.move(filename, 'sounds')
     else:
         await ctx.send(ACCESS_DENIED)
-
-@bot.command()
-async def sismo(ctx):
-    req = requests.get(url = SISMOS_URL)
-    response = req.json()
-    referencia1 = response['ultimos_sismos_chile'][0]['reference']
-    hora1 = response['ultimos_sismos_chile'][0]['chilean_time']
-    magnitud1 = response['ultimos_sismos_chile'][0]['magnitude']
-    profundidad1 = response['ultimos_sismos_chile'][0]['depth']
-
-    await ctx.send(f'Lugar: {referencia1}\nHora: {hora1}\nMagnitud: {magnitud1}\nProfundidad: {profundidad1}')
 
 @bot.command(aliases=['pilsen', 'chela', 'xela', 'untappd'])
 async def beer(ctx, *, query):
