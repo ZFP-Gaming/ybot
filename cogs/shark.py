@@ -17,7 +17,7 @@ class Shark(commands.Cog):
         self.bot = bot  
         
     @commands.command()
-    async def mercado(self, ctx):
+    async def mercados(self, ctx):
         responseMarket = requests.get(urlMarkets)
         response = responseMarket.json()
         mercado = []
@@ -26,6 +26,15 @@ class Shark(commands.Cog):
                 mercado.append(x.name)
 
         await ctx.send(f'Mercado: {mercado}')
-
+        
+    @commands.command()
+    async def valor(self, ctx, *, query):
+        await ctx.message.add_reaction('🔍')
+        urlTicker = f'https://www.buda.com/api/v2/markets/{query}/ticker'
+        responseMarket = requests.get(urlTicker)
+        response = responseMarket.json()
+        
+        await ctx.send(f'El ultimo precio fue $**{response.last_price[0]}** **{response.last_price[1]}**')
+            
 def setup(bot: commands.Bot):
     bot.add_cog(Shark(bot))
