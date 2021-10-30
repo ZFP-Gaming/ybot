@@ -37,5 +37,13 @@ class RoleManagement(commands.Cog):
             member = ctx.message.mentions[0]
             await member.remove_roles(role)
 
+    @commands.command(aliases=['ficha'])
+    async def summon_bot(self, ctx):
+        member = ctx.message.author
+        role = discord.utils.get(ctx.message.guild.roles, name = "ficha")
+        channel = discord.utils.get(ctx.guild.channels, name="general")
+        await member.add_roles(role)
+        await channel.send(f'{member.mention} se cree ficha')
+
 def setup(bot: commands.Bot):
     bot.add_cog(RoleManagement(bot))
