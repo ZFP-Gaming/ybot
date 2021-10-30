@@ -244,8 +244,8 @@ async def on_voice_state_update(member, before, after):
             if voice_client and voice_client.channel == after.channel:
                 id = member.id
                 data = intros.find_one({'id': id})
-                if data and data['effect'] != '' and path.exists(f'sounds/{data["effect"]}.mp3'):
-                    voice_client.play(discord.FFmpegPCMAudio(f'sounds/{data["effect"]}.mp3'))
+                if data and data['effect'] != '' and path.exists(f'sound_effects/{data["effect"]}.mp3'):
+                    voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/{data["effect"]}.mp3'))
                     voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
                     voice_client.source.volume = bot.volume
                 else:
@@ -656,7 +656,7 @@ async def stop(ctx):
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
-    sound_effect = list(glob.glob(f'sounds/{effect}*.mp3'))[0]
+    sound_effect = list(glob.glob(f'sound_effects/{effect}*.mp3'))[0]
     print(f'{ctx.message.author} > {sound_effect}')
     try:
         if sound_effect and path.exists(sound_effect):
@@ -685,7 +685,7 @@ async def sound(ctx, effect):
 
 @bot.command(name='sonidos')
 async def sound_list(ctx):
-    files_path = f'{os.getcwd()}/sounds'
+    files_path = f'{os.getcwd()}/sound_effects'
     files_directory = os.listdir(files_path)
 
     files = sorted(files_directory)
@@ -1091,7 +1091,7 @@ async def joke(ctx):
             await channel.connect()
         vc = ctx.voice_client
         vc.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda x: check_queue(vc))
-        queue.append('sounds/drums.mp3')
+        queue.append('sound_effects/drums.mp3')
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = bot.volume
     else:
@@ -1171,7 +1171,7 @@ async def pikasen(ctx, *, query):
 
 @bot.command()
 async def seba(ctx, effect):
-    sound_effect = f'sounds/{effect}.mp3'
+    sound_effect = f'sound_effects/{effect}.mp3'
     try:
         if ctx.message.author.id == 121417708469223428:
             if path.exists(sound_effect):

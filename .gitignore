@@ -1,14 +1,9 @@
 bot-env/
 *.env
-
 tmp/mongodb_data/
-
 *.mp3
-
 profile.jpg
-
 profile.png
-
 coins_graph.png
-
 cogs/__pycache__/
+sound_effects/
