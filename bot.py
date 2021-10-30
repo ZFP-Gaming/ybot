@@ -93,6 +93,7 @@ reddit = praw.Reddit(
 )
 
 # Cogs loading sequence
+bot.load_extension("cogs.management")
 bot.load_extension("cogs.role_management")
 bot.load_extension("cogs.utilities")
 bot.load_extension("cogs.money")
@@ -1458,22 +1459,6 @@ async def remind(ctx, *, message):
         await asyncio.sleep(seconds)
         await ctx.send(f'oye {ctx.author.mention}, recuerda {" ".join(words[:-3])}')
 
-@bot.command(aliases=['ficha'])
-async def summon_bot(ctx):
-    member = ctx.message.author
-    role = discord.utils.get(ctx.message.guild.roles, name = "ficha")
-    channel = discord.utils.get(ctx.guild.channels, name="general")
-    await member.add_roles(role)
-    await channel.send(f'{member.mention} se cree ficha')
-
-@bot.command()
-async def restart(ctx):
-    roles = [o.name for o in ctx.message.author.roles]
-    if '💻 dev' in roles:
-        subprocess.run(["systemctl", "restart", "ybot"])
-        await ctx.send("🆗")
-    else:
-        await ctx.send(ACCESS_DENIED)
 
 print(i18n.t('base.start'))
 bot.run(TOKEN)
