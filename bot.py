@@ -93,6 +93,7 @@ reddit = praw.Reddit(
 bot.load_extension("cogs.management")
 bot.load_extension("cogs.role_management")
 bot.load_extension("cogs.utilities")
+bot.load_extension("cogs.speech")
 bot.load_extension("cogs.money")
 bot.load_extension("cogs.otaku")
 bot.load_extension("cogs.info")
@@ -338,33 +339,6 @@ async def greet(ctx):
         f'hola po {ctx.message.author.name}'
     ]
     await ctx.send(random.choice(greetings))
-
-@bot.command()
-async def pregunta(ctx):
-    answer = [
-        'En mi opinión, sí',
-        'Es cierto',
-        'Es decididamente así',
-        'Probablemente',
-        'Buen pronóstico',
-        'Todo apunta a que sí',
-        'Sin duda',
-        'Sí',
-        'Sí - definitivamente',
-        'Debes confiar en ello',
-        'Respuesta vaga, vuelve a intentarlo',
-        'Pregunta en otro momento',
-        'Será mejor que no te lo diga ahora',
-        'No puedo predecirlo ahora',
-        'Concéntrate y vuelve a preguntar',
-        'No cuentes con ello',
-        'Mi respuesta es no',
-        'Mis fuentes me dicen que no',
-        'Las perspectivas no son buenas',
-        'Muy dudoso',
-        'Yo no volveria a confiar'
-    ]
-    await ctx.send(random.choice(answer))
 
 @bot.command(name='horoscopo')
 async def fortune(ctx, sign):
