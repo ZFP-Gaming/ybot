@@ -800,7 +800,7 @@ async def add(ctx):
         urllib.request.install_opener(opener)
         urllib.request.urlretrieve(url, filename)
         shutil.move(filename, 'sound_effects')
-        ctx.message.add_reaction('✅')
+        await ctx.message.add_reaction('✅')
     else:
         await ctx.send(ACCESS_DENIED)
 
