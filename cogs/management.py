@@ -13,9 +13,9 @@ class Management(commands.Cog):
     @commands.command()
     async def restart(self, ctx):
         roles = [o.name for o in ctx.message.author.roles]
-        if '💻 dev' in roles:
-            subprocess.run(["systemctl", "restart", "ybot"])
+        if '💻 dev' in roles or 'zfp staff' in roles:
             await ctx.send("🆗")
+            subprocess.run(["systemctl", "restart", "ybot"])
         else:
             await ctx.send(ACCESS_DENIED)
 
