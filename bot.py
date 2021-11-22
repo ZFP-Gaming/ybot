@@ -28,7 +28,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from datetime import date
 from discord.ext import commands
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from gtts import gTTS
 from bs4 import BeautifulSoup
@@ -996,6 +996,20 @@ async def wolverine(ctx):
     wolverine_base.paste(user, (170, 460), mask=user)
     wolverine_base.paste(wolverine_hands, (0, 434), mask=wolverine_hands)
     wolverine_base.save("profile.png", 'PNG')
+    await ctx.send(file = discord.File("profile.png"))
+
+@bot.command(name='accidente')
+async def rekt(ctx):
+    banner = Image.open('./images/accidente.png')
+    avatar = ctx.message.mentions[0].avatar_url_as(format='png', size=128)
+    fnt = ImageFont.truetype("./fonts/MPLUS2-Bold.ttf", 120)
+    data = BytesIO(await avatar.read())
+    user = Image.open(data).convert('RGBA')
+    user = user.resize((636, 636))
+    banner.paste(user, (30, 44), mask=user)
+    draw = ImageDraw.Draw(banner)
+    draw.text((777, 360), ctx.message.mentions[0].name, font=fnt, fill=(0,0,0))
+    banner.save("profile.png", 'PNG')
     await ctx.send(file = discord.File("profile.png"))
 
 @bot.command()
