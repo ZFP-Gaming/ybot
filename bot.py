@@ -162,6 +162,10 @@ def generate_zalgo(input):
         ][v.isalpha()] for v in input
         )
 
+async def update_nickname(member):
+    if member.nick and member.nick.startswith("zfp_"):
+        await member.edit(nick=member.nick.replace("zfp_", ""))
+
 @bot.event
 async def on_member_join(member):
     if member.bot == False:
@@ -237,6 +241,7 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     try:
         voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+        await update_nickname(member)
         if check_ban(member.id):
             return
         if before.channel is None and after.channel is not None and member.bot == False:
