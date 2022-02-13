@@ -18,6 +18,7 @@ import asyncio
 import glob
 import subprocess
 import i18n
+import logging
 
 from os import path
 from os import listdir
@@ -64,6 +65,8 @@ REDIS_URL = os.getenv('REDIS_URL')
 i18n.load_path.append('./translations')
 i18n.set('locale', 'es')
 
+logging.basicConfig(level=logging.INFO)
+
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
 members = db.bot.members
@@ -99,6 +102,8 @@ bot.load_extension("cogs.otaku")
 bot.load_extension("cogs.info")
 bot.load_extension("cogs.recruitment")
 bot.load_extension("cogs.beer")
+
+logger = logging.getLogger('discord')
 
 queue = []
 
@@ -316,7 +321,7 @@ async def karma_ranking(ctx):
 
 @bot.command(name='habla')
 async def say(ctx, *, message):
-    print(f'{ctx.message.author.name} >> {ctx.message.content}')
+    logger.info(f'{ctx.message.author.name} >> {ctx.message.content}')
     channel = discord.utils.get(ctx.guild.text_channels, name='general')
     await channel.send(message)
 
@@ -606,8 +611,7 @@ async def join_channel(ctx):
         channel = ctx.message.author.voice.channel
         await channel.connect()
     except Exception as e:
-        print(e)
-        print('Error al conectarse al canal de voz')
+        logger.error(f'Error al conectarse al canal de voz error:{e}')
 
 @bot.command()
 async def leave(ctx):
@@ -615,8 +619,7 @@ async def leave(ctx):
         voice_client = ctx.guild.voice_client
         await voice_client.disconnect()
     except Exception as e:
-        print(e)
-        print('Error al desconectarse del canal de voz')
+        logger.error(f'Error al conectarse al canal de voz error:{e}')
 
 @bot.command()
 async def stop(ctx):
@@ -634,7 +637,7 @@ async def stop(ctx):
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
     sound_effect = list(glob.glob(f'sound_effects/{effect}*.mp3'))[0]
-    print(f'{ctx.message.author} > {sound_effect}')
+    logger.info(f'method=sound {ctx.message.author} > {sound_effect}')
     try:
         if sound_effect and path.exists(sound_effect):
             voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
@@ -1382,7 +1385,7 @@ async def thisman(ctx, user: discord.Member = None):
 
 @bot.command()
 async def mimic(ctx, member: discord.Member, *, message=None):
-    print(f'{ctx.author.name} is impersonating {member.name}')
+    logger.info(f'{ctx.author.name} is impersonating {member.name}')
     webhook = await ctx.channel.create_webhook(name=member.name)
     await webhook.send(str(message), username=member.name, avatar_url=member.avatar_url)
 
@@ -1396,7 +1399,7 @@ async def zalgofy(ctx, *, message):
 
 @bot.command()
 async def activity(ctx, *, message):
-    print(f'{ctx.message.author.name} >> {ctx.message.content}')
+    logger.info(f'{ctx.message.author.name} >> {ctx.message.content}')
     options = message.split(',')
     activities = {
         'viendo': discord.ActivityType.watching,
