@@ -1016,7 +1016,7 @@ async def rekt(ctx):
     user = user.resize((636, 636))
     banner.paste(user, (30, 44), mask=user)
     draw = ImageDraw.Draw(banner)
-    draw.text((777, 360), ctx.message.mentions[0].name, font=fnt, fill=(0,0,0))
+    draw.text((777, 360), ctx.message.mentions[0].nick, font=fnt, fill=(0,0,0))
     banner.save("profile.png", 'PNG')
     await ctx.send(file = discord.File("profile.png"))
 
