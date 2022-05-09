@@ -37,6 +37,20 @@ class RoleManagement(commands.Cog):
             member = ctx.message.mentions[0]
             await member.remove_roles(role)
 
+    @commands.command(aliases=['sixtosas'])
+    async def pocado_add(self, ctx):
+        if ctx.message.author.id == 655116194562703390:
+            role = discord.utils.get(ctx.message.guild.roles, name = "pocaditos")
+            member = ctx.message.mentions[0]
+            await member.add_roles(role)
+
+    @commands.command(aliases=['rer'])
+    async def pocado_delete(self, ctx):
+        if ctx.message.author.id == 655116194562703390:
+            role = discord.utils.get(ctx.message.guild.roles, name = "pocaditos")
+            member = ctx.message.mentions[0]
+            await member.remove_roles(role)
+
     @commands.command(aliases=['ficha'])
     async def summon_bot(self, ctx):
         member = ctx.message.author
