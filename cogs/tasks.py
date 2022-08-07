@@ -31,10 +31,14 @@ class Tasks(commands.Cog):
           tweets_list = api.user_timeline(screen_name=username, count=1)
           tweet = tweets_list[0]
           video_link = tweet.extended_entities["media"][0]["video_info"]["variants"][0]["url"]
-          r = requests.get(video_link, allow_redirects=True)
-          open("videomeme.mp4", "wb").write(r.content)
-          await channel.send(file=discord.File("videomeme.mp4"))
-          os.remove("videomeme.mp4")
+          if ".m3u8" in video_link:
+            channel = discord.utils.get(guild.channels, name="qa")
+            await channel.send(video_link)
+          else:
+            r = requests.get(video_link, allow_redirects=True)
+            open("videomeme.mp4", "wb").write(r.content)
+            await channel.send(file=discord.File("videomeme.mp4"))
+            os.remove("videomeme.mp4")
 
 def setup(bot: commands.Bot):
     bot.add_cog(Tasks(bot))
