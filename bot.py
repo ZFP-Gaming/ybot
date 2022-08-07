@@ -102,6 +102,7 @@ bot.load_extension("cogs.otaku")
 bot.load_extension("cogs.info")
 bot.load_extension("cogs.recruitment")
 bot.load_extension("cogs.beer")
+bot.load_extension("cogs.tasks")
 
 logger = logging.getLogger('discord')
 
