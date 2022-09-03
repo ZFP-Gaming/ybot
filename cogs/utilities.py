@@ -19,5 +19,13 @@ class Utilities(commands.Cog):
     async def info(self, ctx):
         await ctx.send(ctx.guild)
 
+    @commands.command()
+    async def zoom(self, ctx):
+        avatar = ctx.message.mentions[0].avatar_url_as(format='png', size=128)
+        data = BytesIO(await avatar.read())
+        img = Image.open(data)
+        image.save("profile.png", 'PNG')
+        await ctx.send(file = discord.File("profile.png"))
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
