@@ -1,5 +1,7 @@
 import discord
 import random
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 from discord.ext import commands
 
 class Utilities(commands.Cog):
