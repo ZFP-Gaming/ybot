@@ -23,7 +23,7 @@ class Utilities(commands.Cog):
 
     @commands.command()
     async def zoom(self, ctx):
-        avatar = ctx.message.mentions[0].avatar_url_as(format='png', size=128)
+        avatar = ctx.message.mentions[0].avatar_url_as(format='png', size=256)
         data = BytesIO(await avatar.read())
         img = Image.open(data)
         img.save("profile.png", 'PNG')
