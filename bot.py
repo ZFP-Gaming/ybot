@@ -19,6 +19,7 @@ import glob
 import subprocess
 import i18n
 import logging
+import replicate
 
 from os import path
 from os import listdir
@@ -1428,6 +1429,15 @@ async def remind(ctx, *, message):
         await ctx.message.add_reaction('🆗')
         await asyncio.sleep(seconds)
         await ctx.send(f'oye {ctx.author.mention}, recuerda {" ".join(words[:-3])}')
+
+@bot.command(aliases = ['dibuja'])
+async def draw(ctx, *, prompt):
+    msg = await ctx.send(f"“{prompt}”\n> Generando...")
+
+    model = replicate.models.get("stability-ai/stable-diffusion")
+    image = model.predict(prompt=prompt)[0]
+
+    await msg.edit(content=f"“{prompt}”\n{image}")
 
 
 print(i18n.t('base.start'))
