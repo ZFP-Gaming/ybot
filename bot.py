@@ -251,6 +251,11 @@ async def on_voice_state_update(member, before, after):
         await update_nickname(member)
         if check_ban(member.id):
             return
+        if member.id == 134686670535524352:
+            if before.mute is None and after.mute:
+                vc.play(discord.FFmpegPCMAudio(f'sound_effects/aplauso*.mp3'), after=lambda x: check_queue(vc))
+                vc.source = discord.PCMVolumeTransformer(vc.source)
+                vc.source.volume = bot.volume
         if before.channel is None and after.channel is not None and member.bot == False:
             if voice_client and voice_client.channel == after.channel:
                 id = member.id
