@@ -253,7 +253,7 @@ async def on_voice_state_update(member, before, after):
         if check_ban(member.id):
             return
         if member.id == 134686670535524352:
-            if before.mute is None and after.mute:
+            if before.self_mute == False and after.self_mute == True:
                 voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/aplauso.mp3'), after=lambda x: check_queue(voice_client))
                 voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
                 voice_client.source.volume = bot.volume
