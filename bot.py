@@ -103,9 +103,10 @@ bot.load_extension("cogs.otaku")
 bot.load_extension("cogs.info")
 bot.load_extension("cogs.recruitment")
 bot.load_extension("cogs.beer")
-bot.load_extension("cogs.tasks")
 
 logger = logging.getLogger('discord')
+
+vitoco = 525102032017948673
 
 queue = []
 
@@ -254,7 +255,7 @@ async def on_voice_state_update(member, before, after):
         if member.id == 134686670535524352:
             if before.mute is None and after.mute:
                 voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/aplauso.mp3'), after=lambda x: check_queue(voice_client))
-                voice_client.source = discord.PCMVolumeTransformer(vc.source)
+                voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
                 voice_client.source.volume = bot.volume
         if before.channel is None and after.channel is not None and member.bot == False:
             if voice_client and voice_client.channel == after.channel:
