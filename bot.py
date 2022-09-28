@@ -259,6 +259,10 @@ async def on_voice_state_update(member, before, after):
                     voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/{random.choice(sounds)}.mp3'), after=lambda x: check_queue(voice_client))
                     voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
                     voice_client.source.volume = bot.volume
+            if before.self_mute == True and after.self_mute == False:
+                voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/bu.mp3'), after=lambda x: check_queue(voice_client))
+                voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+                voice_client.source.volume = bot.volume
         if before.channel is None and after.channel is not None and member.bot == False:
             if voice_client and voice_client.channel == after.channel:
                 id = member.id
