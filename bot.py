@@ -20,6 +20,7 @@ import subprocess
 import i18n
 import logging
 import replicate
+import sentry_sdk
 
 from os import path
 from os import listdir
@@ -62,11 +63,17 @@ PIKASEN_URL = os.getenv('PIKASEN_URL')
 PIKASEN_CDN = os.getenv('PIKASEN_CDN')
 REDIS = os.getenv('REDIS')
 REDIS_URL = os.getenv('REDIS_URL')
+SENTRY_DSN = os.getenv('SENTRY_DSN')
 
 i18n.load_path.append('./translations')
 i18n.set('locale', 'es')
 
 logging.basicConfig(level=logging.INFO)
+
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    traces_sample_rate=1.0
+)
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
