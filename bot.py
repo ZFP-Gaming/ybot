@@ -260,16 +260,16 @@ async def on_voice_state_update(member, before, after):
         if check_ban(member.id):
             return
         if member.id == vitoco:
-            if before.self_mute == False and after.self_mute == True:
-                if voice_client and voice_client.channel == after.channel:
-                    sounds = ["aplauso", "yay", "clap1", "clap2", "clap3"]
-                    voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/{random.choice(sounds)}.mp3'), after=lambda x: check_queue(voice_client))
+            if voice_client and voice_client.channel == after.channel:
+                if before.self_mute == False and after.self_mute == True:
+                        sounds = ["aplauso", "yay", "clap1", "clap2", "clap3"]
+                        voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/{random.choice(sounds)}.mp3'), after=lambda x: check_queue(voice_client))
+                        voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+                        voice_client.source.volume = bot.volume
+                if before.self_mute == True and after.self_mute == False:
+                    voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/bu.mp3'), after=lambda x: check_queue(voice_client))
                     voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
                     voice_client.source.volume = bot.volume
-            if before.self_mute == True and after.self_mute == False:
-                voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/bu.mp3'), after=lambda x: check_queue(voice_client))
-                voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
-                voice_client.source.volume = bot.volume
         if before.channel is None and after.channel is not None and member.bot == False:
             if voice_client and voice_client.channel == after.channel:
                 id = member.id
@@ -681,7 +681,7 @@ async def sound(ctx, effect):
         else:
             await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
     except Exception as e:
-        print(e)
+        logger.error(e)
         await ctx.send('Exploté 💣')
 
 @bot.command(name='sonidos')
@@ -716,6 +716,7 @@ async def sound_list(ctx):
             reaction, user = await bot.wait_for("reaction_add", check=lambda reaction, user: user == ctx.author and reaction.emoji in buttons, timeout=60.0)
 
         except Exception as e:
+            logger.error(e)
             return print(e)
 
         else:
