@@ -1462,7 +1462,7 @@ async def draw(ctx, *, prompt):
 
 @bot.command()
 async def horiclicker(ctx):
-    voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
     roles = [o.name for o in ctx.message.author.roles]
     if ('pocaditos' in roles):
         bot.horiclicks += 1
