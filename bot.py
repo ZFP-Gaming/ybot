@@ -93,6 +93,7 @@ intents.members = True
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ', intents=intents)
 bot.volume = 0.2
+bot.horiclicks = 0
 
 reddit = praw.Reddit(
     client_id=REDDIT_ID,
@@ -1459,6 +1460,21 @@ async def draw(ctx, *, prompt):
 
     await msg.edit(content=f"“{prompt}”\n{image}")
 
+@bot.command()
+async def horiclicker(ctx, *):
+    voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+    roles = [o.name for o in ctx.message.author.roles]
+    if ('pocaditos' in roles):
+        bot.horiclicks += 1
+        await ctx.send("https://user-images.githubusercontent.com/2821732/197431400-821152e1-31d8-4525-a212-ce965874711b.gif")
+        await ctx.send(f'🐰 horiclicks: {bot.horiclicks}')
+    else:
+        if voice_client is None:
+            channel = ctx.message.author.voice.channel
+            await channel.connect()
+        voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/fbi.mp3'), after=lambda x: check_queue(voice_client))
+        voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+        voice_client.source.volume = bot.volume
 
 print(i18n.t('base.start'))
 bot.run(TOKEN)
