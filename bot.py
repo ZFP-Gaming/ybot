@@ -1466,7 +1466,7 @@ async def horiclicker(ctx):
     roles = [o.name for o in ctx.message.author.roles]
     if ('pocaditos' in roles):
         bot.horiclicks += 1
-        await ctx.send("images/horiclick.gif")
+        await ctx.send(file = discord.File("images/horiclick.gif"))
         await ctx.send(f'🐰 horiclicks: {bot.horiclicks}')
     else:
         if voice_client is None:
