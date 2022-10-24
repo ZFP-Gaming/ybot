@@ -1475,6 +1475,9 @@ async def horiclicker(ctx):
         voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/fbi.mp3'), after=lambda x: check_queue(voice_client))
         voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
         voice_client.source.volume = bot.volume
+        await ctx.message.add_reaction('🚨')
+        await ctx.message.add_reaction('🚓')
+        await ctx.message.add_reaction('👮')
 
 print(i18n.t('base.start'))
 bot.run(TOKEN)
