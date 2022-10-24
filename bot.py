@@ -1461,7 +1461,7 @@ async def draw(ctx, *, prompt):
     await msg.edit(content=f"“{prompt}”\n{image}")
 
 @bot.command()
-async def horiclicker(ctx, *):
+async def horiclicker(ctx):
     voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
     roles = [o.name for o in ctx.message.author.roles]
     if ('pocaditos' in roles):
