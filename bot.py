@@ -1467,7 +1467,7 @@ async def horiclicker(ctx, *):
     if ('pocaditos' in roles):
         bot.horiclicks += 1
         await ctx.send("https://user-images.githubusercontent.com/2821732/197431400-821152e1-31d8-4525-a212-ce965874711b.gif")
-        await ctx.send(f'horiclicks: {bot.horiclicks}')
+        await ctx.send(f'🐰 horiclicks: {bot.horiclicks}')
     else:
         if voice_client is None:
             channel = ctx.message.author.voice.channel
