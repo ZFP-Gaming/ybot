@@ -293,7 +293,7 @@ async def on_voice_state_update(member, before, after):
                 print('Voice channel empty, leaving...')
                 await voice_client.disconnect()
     except Exception as e:
-        print(e)
+        logger.error(e)
 
 @bot.event
 async def on_reaction_add(reaction, member):
@@ -310,7 +310,7 @@ async def on_reaction_add(reaction, member):
                 actions.replace_one({'author': author, 'user': user}, {'author': author, 'user': user, 'updated_at': datetime.now()}, upsert=True)
                 print(f'{member.name} reacted on {reaction.message.author.name} ++')
     except Exception as e:
-        print(e)
+        logger.error(e)
 
 @bot.command(aliases = ['karma', 'ranking'])
 async def karma_ranking(ctx):
@@ -948,7 +948,7 @@ async def translate(ctx, *, query):
         data = requests.get(url).json()
         await ctx.send(f'🌐 {data[0][0][0]}')
     except Exception as e:
-        print(e)
+        logger.error(e)
         await ctx.send('No cacho ¯\_(ツ)_/¯')
 
 @bot.command()
@@ -969,7 +969,7 @@ async def volume(ctx, value):
         bot.volume = int(value)/100
         await ctx.send(f'El volumen actual es {value}%')
     except Exception as e:
-        print(e)
+        logger.error(e)
         await ctx.send('')
 
 @bot.command(name='busca')
@@ -1158,7 +1158,7 @@ async def pikasen(ctx, *, query):
         else:
             await ctx.author.send('No encontré nada (por suerte 😰)')
     except Exception as e:
-        print(e)
+        logger.error(e)
         await ctx.author.send('No encontré nada (por suerte 😰)')
 
 @bot.command()
@@ -1201,7 +1201,7 @@ async def seba(ctx, effect):
             ]
             await ctx.send(random.choice(reactions))
     except Exception as e:
-        print(e)
+        logger.error(e)
         await ctx.send('Exploté 💣')
 
 @bot.command()
