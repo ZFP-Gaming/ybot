@@ -13,14 +13,13 @@ class Info(commands.Cog):
 
     @commands.command()
     async def sismo(self, ctx):
-        req = requests.get(url = SISMOS_URL)
-        response = req.json()
-        referencia1 = response['ultimos_sismos_chile'][0]['reference']
-        hora1 = response['ultimos_sismos_chile'][0]['chilean_time']
-        magnitud1 = response['ultimos_sismos_chile'][0]['magnitude']
-        profundidad1 = response['ultimos_sismos_chile'][0]['depth']
+        json_data = requests.get(url = SISMOS_URL).json()
+        location = json_data['ultimos_sismos_chile'][0]['reference']
+        time = json_data['ultimos_sismos_chile'][0]['chilean_time']
+        magnitude = json_data['ultimos_sismos_chile'][0]['magnitude']
+        depth = json_data['ultimos_sismos_chile'][0]['depth']
 
-        await ctx.send(f'Lugar: {referencia1}\nHora: {hora1}\nMagnitud: {magnitud1}\nProfundidad: {profundidad1}')
+        await ctx.send(f'Lugar: {location}\nHora: {time}\nMagnitud: {magnitude}\nProfundidad: {depth}')
 
     @commands.command(help="Con este comando puedes revisar los contagiados, muertos y recuperados por Covid-19 en Chile.")
     async def covid(self, ctx):
