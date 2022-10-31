@@ -33,11 +33,9 @@ class Info(commands.Cog):
 
     @commands.command()
     async def dato(self, ctx):
-        req = requests.get(url = INUTIL_URL)
-        response = req.json()
+        json_data = requests.get(url = INUTIL_URL).json()
 
-        dato = response['text']
-        await ctx.send(dato)
+        await ctx.send(json_data['text'])
 
 def setup(bot: commands.Bot):
     bot.add_cog(Info(bot))
