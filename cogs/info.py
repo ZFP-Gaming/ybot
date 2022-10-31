@@ -23,12 +23,11 @@ class Info(commands.Cog):
 
     @commands.command(help="Con este comando puedes revisar los contagiados, muertos y recuperados por Covid-19 en Chile.")
     async def covid(self, ctx):
-        req = requests.get(url = COVID_URL)
-        response = req.json()
+        json_data = requests.get(url = COVID_URL).json()
+        confirmed = json_data['confirmed']['value']
+        recovered = json_data['recovered']['value']
+        deaths = json_data['deaths']['value']
 
-        confirmed = response['confirmed']['value']
-        recovered = response['recovered']['value']
-        deaths = response['deaths']['value']
         covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
         await covid_data.add_reaction('\U0001F1EB')
 
