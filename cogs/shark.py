@@ -1,14 +1,8 @@
 import discord
-import os
 import requests
 from discord.ext import commands
 
 market_url = 'https://www.buda.com/api/v2/markets'
-response_markets = requests.get(market_url)
-
-market_id = 'btc-clp' #response.name
-ticker_url = f'https://www.buda.com/api/v2/markets/{market_id}/ticker'
-response_ticker = requests.get(ticker_url)
 
 class Shark(commands.Cog):
     def __init__(self, bot: commands.Bot):
