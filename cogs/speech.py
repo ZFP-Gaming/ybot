@@ -41,6 +41,16 @@ PROFANITIES = [
     'prepara las nalgas porque te voy a dejar como bambi',
     'a tu mamá le quedan malas las cazuelas'
 ]
+KING_PRHASES = [
+    'Maricones chupenme la raja con caca',
+    'Mysterion lo más grande',
+    'Tu conoces el sexo? Tu no conoces el sexo',
+    'Mi destino ya esta trazao y se llama éxito',
+    'Nunca hay chupao zorra',
+    'viska spilli fudbar',
+    'vilus spille memey?',
+    'obisnake'
+]
 
 class Speech(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -61,6 +71,10 @@ class Speech(commands.Cog):
     async def putea(ctx, *, name):
         victim = name.replace("a ", "")
         await ctx.send(f'oe {victim} {random.choice(PROFANITIES)}')
+
+    @commands.command()
+    async def king(ctx):
+        await ctx.send(random.choice(KING_PRHASES))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Speech(bot))

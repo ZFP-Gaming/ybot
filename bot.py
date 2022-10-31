@@ -718,20 +718,6 @@ async def sound_list(ctx):
                 await msg.edit(embed=paginated_content[current])
 
 @bot.command()
-async def king(ctx):
-    frase = [
-        'Maricones chupenme la raja con caca',
-        'Mysterion lo más grande',
-        'Tu conoces el sexo? Tu no conoces el sexo',
-        'Mi destino ya esta trazao y se llama éxito',
-        'Nunca hay chupao zorra',
-        'viska spilli fudbar',
-        'vilus spille memey?',
-        'obisnake'
-    ]
-    await ctx.send(random.choice(frase))
-
-@bot.command()
 async def intro(ctx):
     roles = [o.name for o in ctx.message.author.roles]
     if '💻 dev' in roles:
