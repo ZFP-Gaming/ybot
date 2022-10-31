@@ -14,9 +14,9 @@ class Money(commands.Cog):
     @commands.command(aliases=['convierte', 'convertir', 'plata', '$'])
     async def convert(self, ctx, *, query):
         json_data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
-        values = query.split(' ')
-        amount = int(values[0])
-        currency = values[1].upper()
+        args = query.split(' ')
+        amount = int(args[0])
+        currency = args[1].upper()
         base_rate = json_data['rates']['CLP']
         target_rate = json_data['rates'][currency]
 
@@ -29,8 +29,8 @@ class Money(commands.Cog):
     @commands.command()
     async def uf(self, ctx, *, query):
         json_data = requests.get(url = UTM_URL).json()
-        values = query.split(' ')
-        amount = int(values[0])
+        args = query.split(' ')
+        amount = int(args[0])
         uf_value = json_data['uf']['valor']
 
         total = int(amount * uf_value)
@@ -41,8 +41,8 @@ class Money(commands.Cog):
     @commands.command()
     async def utm(self, ctx, *, query):
         json_data = requests.get(url = UTM_URL).json()
-        values = query.split(' ')
-        amount = int(values[0])
+        args = query.split(' ')
+        amount = int(args[0])
         utm_value = json_data['utm']['valor']
 
         total = int(amount * utm_value)
