@@ -13,17 +13,18 @@ class Money(commands.Cog):
 
     @commands.command(aliases=['convierte', 'convertir', 'plata', '$'])
     async def convert(self, ctx, *, query):
+        json_data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
         values = query.split(' ')
         amount = int(values[0])
         currency = values[1].upper()
-        data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
-        usd = data['rates']['USD']
-        base = data['rates']['CLP']
-        target = data['rates'][currency]
-        in_usd = amount / target
-        final = round(base * in_usd)
-        formatted = '{0:,}'.format(final)
-        await ctx.send(f'🏦 {amount} {currency} → ${formatted} CLP')
+        base_rate = json_data['rates']['CLP']
+        target_rate = json_data['rates'][currency]
+
+        amount_in_usd = amount / target_rate
+        final_value = round(base_rate * amount_in_usd)
+        formatted_value = '{0:,}'.format(final_value)
+
+        await ctx.send(f'🏦 {amount} {currency} → ${formatted_value} CLP')
 
     @commands.command()
     async def uf(self, ctx, *, query):
