@@ -361,17 +361,6 @@ async def putea(ctx, *, name):
     ]
     await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
 
-@bot.command(aliases=['hola', 'ola', 'holas', 'olas', 'wenas', 'wena', 'holanda'])
-async def greet(ctx):
-    greetings = [
-        'olas :ocean:',
-        'wena wena',
-        'kiu majaji',
-        'que queri ahora ql',
-        f'hola po {ctx.message.author.name}'
-    ]
-    await ctx.send(random.choice(greetings))
-
 @bot.command(name='horoscopo')
 async def fortune(ctx, sign):
     req = requests.get(url = YOLI_URL)

@@ -25,6 +25,12 @@ ANSWERS = [
     'Muy dudoso',
     'Yo no volveria a confiar'
 ]
+BASE_GREETINGS = [
+    'olas :ocean:',
+    'wena wena',
+    'kiu majaji',
+    'que queri ahora ql'
+]
 
 class Speech(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -33,6 +39,14 @@ class Speech(commands.Cog):
     @commands.command()
     async def pregunta(self, ctx):
         await ctx.send(random.choice(ANSWERS))
+
+    @commands.command(aliases=['hola', 'ola', 'holas', 'olas', 'wenas', 'wena', 'holanda'])
+    async def greet(ctx):
+        ctx_greetings = [
+            f'hola po {ctx.message.author.name}'
+        ]
+        await ctx.send(random.choice(BASE_GREETINGS + ctx_greetings))
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Speech(bot))
