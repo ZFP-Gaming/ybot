@@ -31,6 +31,16 @@ BASE_GREETINGS = [
     'kiu majaji',
     'que queri ahora ql'
 ]
+PROFANITIES = [
+    'eri puro wn',
+    'tu mamá es el vitoco',
+    'puro perro logi ql',
+    'deja de dar dislikes tonto wn',
+    'maldito sapo conchetumare',
+    'chupala meando',
+    'prepara las nalgas porque te voy a dejar como bambi',
+    'a tu mamá le quedan malas las cazuelas'
+]
 
 class Speech(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -47,6 +57,10 @@ class Speech(commands.Cog):
         ]
         await ctx.send(random.choice(BASE_GREETINGS + ctx_greetings))
 
+    @commands.command()
+    async def putea(ctx, *, name):
+        victim = name.replace("a ", "")
+        await ctx.send(f'oe {victim} {random.choice(PROFANITIES)}')
 
 def setup(bot: commands.Bot):
     bot.add_cog(Speech(bot))

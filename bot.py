@@ -347,20 +347,6 @@ async def say(ctx, *, message):
     channel = discord.utils.get(ctx.guild.text_channels, name='general')
     await channel.send(message)
 
-@bot.command()
-async def putea(ctx, *, name):
-    lista = [
-        'eri puro wn',
-        'tu mamá es el vitoco',
-        'puro perro logi ql',
-        'deja de dar dislikes tonto wn',
-        'maldito sapo conchetumare',
-        'chupala meando',
-        'prepara las nalgas porque te voy a dejar como bambi',
-        'a tu mamá le quedan malas las cazuelas'
-    ]
-    await ctx.send(f'oe {name.replace("a ", "")} {random.choice(lista)}')
-
 @bot.command(name='horoscopo')
 async def fortune(ctx, sign):
     req = requests.get(url = YOLI_URL)
