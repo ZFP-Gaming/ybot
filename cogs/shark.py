@@ -3,12 +3,12 @@ import os
 import requests
 from discord.ext import commands
 
-urlMarkets = 'https://www.buda.com/api/v2/markets'
-responseMarket = requests.get(urlMarkets)
+market_url = 'https://www.buda.com/api/v2/markets'
+response_markets = requests.get(market_url)
 
 market_id = 'btc-clp' #response.name
-urlTicker = f'https://www.buda.com/api/v2/markets/{market_id}/ticker'
-responseTicker = requests.get(urlTicker)
+ticker_url = f'https://www.buda.com/api/v2/markets/{market_id}/ticker'
+response_ticker = requests.get(ticker_url)
 
 class Shark(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -16,23 +16,23 @@ class Shark(commands.Cog):
 
     @commands.command()
     async def mercados(self, ctx):
-        responseMarket = requests.get(urlMarkets)
-        response = responseMarket.json()
-        mercado = []
-        for x in response:
-            if x.quote_currency == 'CLP':
-                mercado.append(x.name)
+        response_markets = requests.get(market_url)
+        parsed_markets = response_markets.json()
+        names_array = []
+        for market in parsed_markets:
+            if market.quote_currency == 'CLP':
+                names_array.append(market.name)
 
-        await ctx.send(f'Mercado: {mercado}')
+        await ctx.send(f'Mercado: {names_array}')
 
     @commands.command()
     async def valor(self, ctx, *, query):
         await ctx.message.add_reaction('🔍')
-        urlTicker = f'https://www.buda.com/api/v2/markets/{query}/ticker'
-        responseMarket = requests.get(urlTicker)
-        response = responseMarket.json()
+        ticker_url = f'https://www.buda.com/api/v2/markets/{query}/ticker'
+        response_ticker = requests.get(ticker_url)
+        parsed_info = response_ticker.json()
 
-        await ctx.send(f'El ultimo precio fue $**{response.last_price[0]}** **{response.last_price[1]}**')
+        await ctx.send(f'El ultimo precio fue $**{parsed_info.last_price[0]}** **{parsed_info.last_price[1]}**')
 
 def setup(bot: commands.Bot):
     bot.add_cog(Shark(bot))
