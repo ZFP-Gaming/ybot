@@ -13,33 +13,29 @@ class Info(commands.Cog):
 
     @commands.command()
     async def sismo(self, ctx):
-        req = requests.get(url = SISMOS_URL)
-        response = req.json()
-        referencia1 = response['ultimos_sismos_chile'][0]['reference']
-        hora1 = response['ultimos_sismos_chile'][0]['chilean_time']
-        magnitud1 = response['ultimos_sismos_chile'][0]['magnitude']
-        profundidad1 = response['ultimos_sismos_chile'][0]['depth']
+        json_data = requests.get(url = SISMOS_URL).json()
+        location = json_data['ultimos_sismos_chile'][0]['reference']
+        time = json_data['ultimos_sismos_chile'][0]['chilean_time']
+        magnitude = json_data['ultimos_sismos_chile'][0]['magnitude']
+        depth = json_data['ultimos_sismos_chile'][0]['depth']
 
-        await ctx.send(f'Lugar: {referencia1}\nHora: {hora1}\nMagnitud: {magnitud1}\nProfundidad: {profundidad1}')
+        await ctx.send(f'Lugar: {location}\nHora: {time}\nMagnitud: {magnitude}\nProfundidad: {depth}')
 
     @commands.command(help="Con este comando puedes revisar los contagiados, muertos y recuperados por Covid-19 en Chile.")
     async def covid(self, ctx):
-        req = requests.get(url = COVID_URL)
-        response = req.json()
+        json_data = requests.get(url = COVID_URL).json()
+        confirmed = json_data['confirmed']['value']
+        recovered = json_data['recovered']['value']
+        deaths = json_data['deaths']['value']
 
-        confirmed = response['confirmed']['value']
-        recovered = response['recovered']['value']
-        deaths = response['deaths']['value']
         covid_data = await ctx.send(f'Confirmados: {confirmed} :facepalm:\nRecuperados: {recovered} :tada:\nMuertitos: {deaths} :regional_indicator_f:')
         await covid_data.add_reaction('\U0001F1EB')
 
     @commands.command()
     async def dato(self, ctx):
-        req = requests.get(url = INUTIL_URL)
-        response = req.json()
+        json_data = requests.get(url = INUTIL_URL).json()
 
-        dato = response['text']
-        await ctx.send(dato)
+        await ctx.send(json_data['text'])
 
 def setup(bot: commands.Bot):
     bot.add_cog(Info(bot))
