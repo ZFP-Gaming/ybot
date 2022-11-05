@@ -13,43 +13,42 @@ class Money(commands.Cog):
 
     @commands.command(aliases=['convierte', 'convertir', 'plata', '$'])
     async def convert(self, ctx, *, query):
-        values = query.split(' ')
-        amount = int(values[0])
-        currency = values[1].upper()
-        data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
-        usd = data['rates']['USD']
-        base = data['rates']['CLP']
-        target = data['rates'][currency]
-        in_usd = amount / target
-        final = round(base * in_usd)
-        formatted = '{0:,}'.format(final)
-        await ctx.send(f'🏦 {amount} {currency} → ${formatted} CLP')
+        json_data = requests.get(f'{EXCHANGE_URL}{EXCHANGE_APP_ID}').json()
+        args = query.split(' ')
+        amount = int(args[0])
+        currency = args[1].upper()
+        base_rate = json_data['rates']['CLP']
+        target_rate = json_data['rates'][currency]
+
+        amount_in_usd = amount / target_rate
+        final_value = round(base_rate * amount_in_usd)
+        formatted_value = '{0:,}'.format(final_value)
+
+        await ctx.send(f'🏦 {amount} {currency} → ${formatted_value} CLP')
 
     @commands.command()
     async def uf(self, ctx, *, query):
-        req = requests.get(url = UTM_URL)
-        response = req.json()
-        values = query.split(' ')
-        amount = int(values[0])
-        values_uf = response['uf']['valor']
-        total = amount*values_uf
-        total_entero = int(total)
-        formatted = '{0:,}'.format(total_entero)
+        json_data = requests.get(url = UTM_URL).json()
+        args = query.split(' ')
+        amount = int(args[0])
+        uf_value = json_data['uf']['valor']
 
-        await ctx.send(f'🏦 {amount} UF son ${formatted} pesos')
+        total = int(amount * uf_value)
+        formatted_total = '{0:,}'.format(total)
+
+        await ctx.send(f'🏦 {amount} UF son ${formatted_total} pesos')
 
     @commands.command()
     async def utm(self, ctx, *, query):
-        req = requests.get(url = UTM_URL)
-        response = req.json()
-        values = query.split(' ')
-        amount = int(values[0])
-        values_utm = response['utm']['valor']
-        total = amount*values_utm
-        total_entero = int(total)
-        formatted = '{0:,}'.format(total_entero)
+        json_data = requests.get(url = UTM_URL).json()
+        args = query.split(' ')
+        amount = int(args[0])
+        utm_value = json_data['utm']['valor']
 
-        await ctx.send(f'🏦 {amount} UTM son ${formatted} pesos')
+        total = int(amount * utm_value)
+        formatted_total = '{0:,}'.format(total)
+
+        await ctx.send(f'🏦 {amount} UTM son ${formatted_total} pesos')
 
 def setup(bot: commands.Bot):
     bot.add_cog(Money(bot))
