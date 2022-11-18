@@ -607,6 +607,7 @@ async def join_channel(ctx):
     try:
         channel = ctx.message.author.voice.channel
         await channel.connect()
+        await ctx.message.delete()
     except Exception as e:
         logger.error(f'Error al conectarse al canal de voz error:{e}')
 
@@ -615,6 +616,7 @@ async def leave(ctx):
     try:
         voice_client = ctx.guild.voice_client
         await voice_client.disconnect()
+        await ctx.message.delete()
     except Exception as e:
         logger.error(f'Error al conectarse al canal de voz error:{e}')
 
@@ -630,6 +632,7 @@ async def stop(ctx):
             if vc.is_playing():
                 queue = []
                 vc.stop()
+                await ctx.message.delete()
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
