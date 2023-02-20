@@ -1450,6 +1450,8 @@ async def horiclicker(ctx):
 async def chatgpt(ctx, *, prompt):
     model_engine = "text-davinci-003"
 
+    msg = await ctx.send(f"“{prompt}”\n> Generando...")
+
     completion = openai.Completion.create(
         engine=model_engine,
         prompt=prompt,
@@ -1459,7 +1461,6 @@ async def chatgpt(ctx, *, prompt):
         temperature=0.5
     )
 
-    msg = await ctx.send(f"“{prompt}”\n> Generando...")
     response = completion.choices[0].text
     await msg.edit(content=response)
 
