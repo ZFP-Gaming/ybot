@@ -1459,8 +1459,9 @@ async def chatgpt(ctx, *, prompt):
         temperature=0.5
     )
 
+    msg = await ctx.send(f"“{prompt}”\n> Generando...")
     response = completion.choices[0].text
-    await ctx.send(response)
+    await msg.edit(content=response)
 
 
 print(i18n.t('base.start'))
