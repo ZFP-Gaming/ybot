@@ -105,15 +105,15 @@ reddit = praw.Reddit(
 )
 
 # Cogs loading sequence
-bot.load_extension("cogs.management")
-bot.load_extension("cogs.role_management")
-bot.load_extension("cogs.utilities")
-bot.load_extension("cogs.speech")
-bot.load_extension("cogs.money")
-bot.load_extension("cogs.otaku")
-bot.load_extension("cogs.info")
-bot.load_extension("cogs.recruitment")
-bot.load_extension("cogs.beer")
+await bot.load_extension("cogs.management")
+await bot.load_extension("cogs.role_management")
+await bot.load_extension("cogs.utilities")
+await bot.load_extension("cogs.speech")
+await bot.load_extension("cogs.money")
+await bot.load_extension("cogs.otaku")
+await bot.load_extension("cogs.info")
+await bot.load_extension("cogs.recruitment")
+await bot.load_extension("cogs.beer")
 
 logger = logging.getLogger('discord')
 
