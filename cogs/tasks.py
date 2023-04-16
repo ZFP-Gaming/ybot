@@ -40,5 +40,5 @@ class Tasks(commands.Cog):
             await channel.send(file=discord.File("videomeme.mp4"))
             os.remove("videomeme.mp4")
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Tasks(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Tasks(bot))

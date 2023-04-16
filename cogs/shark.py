@@ -28,5 +28,5 @@ class Shark(commands.Cog):
 
         await ctx.send(f'El ultimo precio fue $**{parsed_info.last_price[0]}** **{parsed_info.last_price[1]}**')
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Shark(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Shark(bot))

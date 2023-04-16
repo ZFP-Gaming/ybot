@@ -46,5 +46,5 @@ class Otaku(commands.Cog):
         await ctx.send('nyanyame nyanyajyu nyanya-do no nyarabi de nyakunyaku inyanyaku nyanyahan nyanya-dai nyannyaku nyarabete nyaganyagame')
         await ctx.send('https://pa1.narvii.com/6151/7d3b92d97a9e694d2c7a3ea696eadeb79988821d_hq.gif')
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Otaku(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Otaku(bot))

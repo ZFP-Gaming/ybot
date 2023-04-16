@@ -59,5 +59,5 @@ class RoleManagement(commands.Cog):
         await member.add_roles(role)
         await channel.send(f'{member.mention} se cree ficha')
 
-def setup(bot: commands.Bot):
-    bot.add_cog(RoleManagement(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(RoleManagement(bot))

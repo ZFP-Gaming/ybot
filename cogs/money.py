@@ -50,5 +50,5 @@ class Money(commands.Cog):
 
         await ctx.send(f'🏦 {amount} UTM son ${formatted_total} pesos')
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Money(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Money(bot))

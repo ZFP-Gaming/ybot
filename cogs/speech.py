@@ -76,5 +76,5 @@ class Speech(commands.Cog):
     async def king(ctx):
         await ctx.send(random.choice(KING_PRHASES))
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Speech(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Speech(bot))

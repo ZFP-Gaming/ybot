@@ -45,5 +45,5 @@ class Management(commands.Cog):
         else:
             await ctx.send(ACCESS_DENIED)
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Management(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Management(bot))

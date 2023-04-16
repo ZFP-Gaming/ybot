@@ -37,5 +37,5 @@ class Beer(commands.Cog):
             embed.add_field(name="Estilo", value=beer['beer_style'], inline=False)
             await ctx.send(embed=embed)
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Beer(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Beer(bot))

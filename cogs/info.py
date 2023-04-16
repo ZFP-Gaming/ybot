@@ -37,5 +37,5 @@ class Info(commands.Cog):
 
         await ctx.send(json_data['text'])
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Info(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Info(bot))

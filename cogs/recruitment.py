@@ -31,5 +31,5 @@ class Recruitment(commands.Cog):
         embed.add_field(name='Listado de postulaciones', value=application_requests, inline=False)
         await ctx.send(embed=embed)
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Recruitment(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Recruitment(bot))

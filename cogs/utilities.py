@@ -29,5 +29,5 @@ class Utilities(commands.Cog):
         img.save("profile.png", 'PNG')
         await ctx.send(file = discord.File("profile.png"))
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Utilities(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Utilities(bot))
