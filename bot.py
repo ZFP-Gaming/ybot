@@ -91,7 +91,7 @@ wikipedia.set_lang("es")
 if REDIS:
     r = redis.Redis(host=REDIS_URL, port=6379, db=0)
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 
 bot = commands.Bot(command_prefix=f'{BOT_PREFIX} ', intents=intents)
