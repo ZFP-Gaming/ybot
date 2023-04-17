@@ -104,17 +104,6 @@ reddit = praw.Reddit(
     user_agent="ybot"
 )
 
-# Cogs loading sequence
-await bot.load_extension("cogs.management")
-await bot.load_extension("cogs.role_management")
-await bot.load_extension("cogs.utilities")
-await bot.load_extension("cogs.speech")
-await bot.load_extension("cogs.money")
-await bot.load_extension("cogs.otaku")
-await bot.load_extension("cogs.info")
-await bot.load_extension("cogs.recruitment")
-await bot.load_extension("cogs.beer")
-
 async def load_extensions():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
