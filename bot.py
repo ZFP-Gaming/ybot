@@ -115,6 +115,17 @@ await bot.load_extension("cogs.info")
 await bot.load_extension("cogs.recruitment")
 await bot.load_extension("cogs.beer")
 
+async def load_extensions():
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            # cut off the .py from the file name
+            await bot.load_extension(f"cogs.{filename[:-3]}")
+
+async def main():
+    async with bot:
+        await load_extensions()
+        await bot.run(TOKEN)
+
 logger = logging.getLogger('discord')
 
 vitoco = 525102032017948673
@@ -1466,4 +1477,4 @@ async def chatgpt(ctx, *, prompt):
 
 
 print(i18n.t('base.start'))
-bot.run(TOKEN)
+asyncio.run(main())
