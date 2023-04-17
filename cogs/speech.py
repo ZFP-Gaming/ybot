@@ -61,19 +61,19 @@ class Speech(commands.Cog):
         await ctx.send(random.choice(ANSWERS))
 
     @commands.command(aliases=['hola', 'ola', 'holas', 'olas', 'wenas', 'wena', 'holanda'])
-    async def greet(ctx):
+    async def greet(self, ctx):
         ctx_greetings = [
             f'hola po {ctx.message.author.name}'
         ]
         await ctx.send(random.choice(BASE_GREETINGS + ctx_greetings))
 
     @commands.command()
-    async def putea(ctx, *, name):
+    async def putea(self, ctx, *, name):
         victim = name.replace("a ", "")
         await ctx.send(f'oe {victim} {random.choice(PROFANITIES)}')
 
     @commands.command()
-    async def king(ctx):
+    async def king(self, ctx):
         await ctx.send(random.choice(KING_PRHASES))
 
 async def setup(bot: commands.Bot):
