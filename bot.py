@@ -13,6 +13,7 @@ import urllib.request
 import shutil
 import praw
 import matplotlib.pyplot as plt
+import nest_asyncio
 import redis
 import asyncio
 import glob
@@ -37,6 +38,8 @@ from io import BytesIO
 from gtts import gTTS
 from bs4 import BeautifulSoup
 from faker import Faker
+
+nest_asyncio.apply()
 
 load_dotenv()
 KARMA_COOLDOWN = 30
