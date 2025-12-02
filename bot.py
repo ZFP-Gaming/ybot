@@ -123,6 +123,7 @@ logger = logging.getLogger('discord')
 vitoco = 525102032017948673
 
 queue = []
+voice_connecting = set()
 
 def manage_karma(id, amount):
     member = members.find_one({'id': id})
@@ -292,7 +293,16 @@ async def on_voice_state_update(member, before, after):
                     roles = [o.name for o in member.roles]
                     if ('ficha' in roles):
                         channel = after.channel
-                        await channel.connect()
+                        if member.guild.id in voice_connecting:
+                            logger.info('Voice connect already in progress, skipping duplicate attempt')
+                        else:
+                            voice_connecting.add(member.guild.id)
+                            try:
+                                await channel.connect()
+                            except Exception as connect_error:
+                                logger.error(f'Error al conectarse al canal de voz: {connect_error}')
+                            finally:
+                                voice_connecting.discard(member.guild.id)
         if voice_client and voice_client.is_connected() and voice_client.channel:
             connected_users = voice_client.channel.members
             if len(connected_users) == 1 and connected_users[0].bot:
