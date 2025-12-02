@@ -13,7 +13,7 @@ class Tasks(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-      self.meme_gatherer.start()
+      # self.meme_gatherer.start()
 
     @tasks.loop(hours=1)
     async def meme_gatherer(self):
