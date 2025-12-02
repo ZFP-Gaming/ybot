@@ -13,6 +13,7 @@ class Tasks(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+      print("tweepy disabled for now")
       # self.meme_gatherer.start()
 
     @tasks.loop(hours=1)
