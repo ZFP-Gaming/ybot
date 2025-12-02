@@ -612,7 +612,15 @@ async def play(ctx, *, query):
 async def join_channel(ctx):
     try:
         channel = ctx.message.author.voice.channel
-        await channel.connect()
+        voice_client = ctx.guild.voice_client
+
+        if voice_client:
+            # Already connected somewhere, just move instead of raising an error
+            if voice_client.channel != channel:
+                await voice_client.move_to(channel)
+        else:
+            await channel.connect()
+
         await ctx.message.delete()
     except Exception as e:
         logger.error(f'Error al conectarse al canal de voz error:{e}')
@@ -621,8 +629,11 @@ async def join_channel(ctx):
 async def leave(ctx):
     try:
         voice_client = ctx.guild.voice_client
-        await voice_client.disconnect()
-        await ctx.message.delete()
+        if voice_client:
+            await voice_client.disconnect()
+            await ctx.message.delete()
+        else:
+            logger.info('leave called but no active voice client found')
     except Exception as e:
         logger.error(f'Error al conectarse al canal de voz error:{e}')
 
