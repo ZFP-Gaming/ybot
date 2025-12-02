@@ -145,7 +145,7 @@ def last_interaction(author, user):
         return 100
 
 def check_queue(voice_client):
-    if queue != []:
+    if voice_client and voice_client.is_connected() and queue:
         sound_effect = queue.pop(0)
         voice_client.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(voice_client))
         voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
@@ -267,7 +267,7 @@ async def on_voice_state_update(member, before, after):
         if check_ban(member.id):
             return
         if member.id == vitoco:
-            if voice_client and voice_client.channel == after.channel:
+            if voice_client and voice_client.is_connected() and voice_client.channel == after.channel:
                 if before.self_mute == False and after.self_mute == True:
                         sounds = ["aplauso", "yay", "clap1", "clap2", "clap3"]
                         voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/{random.choice(sounds)}.mp3'), after=lambda x: check_queue(voice_client))
@@ -278,7 +278,7 @@ async def on_voice_state_update(member, before, after):
                     voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
                     voice_client.source.volume = bot.volume
         if before.channel is None and after.channel is not None and member.bot == False:
-            if voice_client and voice_client.channel == after.channel:
+            if voice_client and voice_client.is_connected() and voice_client.channel == after.channel:
                 id = member.id
                 data = intros.find_one({'id': id})
                 if data and data['effect'] != '' and path.exists(f'sound_effects/{data["effect"]}.mp3'):
@@ -293,7 +293,7 @@ async def on_voice_state_update(member, before, after):
                     if ('ficha' in roles):
                         channel = after.channel
                         await channel.connect()
-        if voice_client and voice_client.channel == before.channel:
+        if voice_client and voice_client.is_connected() and voice_client.channel:
             connected_users = voice_client.channel.members
             if len(connected_users) == 1 and connected_users[0].bot:
                 print('Voice channel empty, leaving...')
