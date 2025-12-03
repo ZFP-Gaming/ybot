@@ -122,6 +122,7 @@ vitoco = 525102032017948673
 queue = []
 voice_connecting = set()
 protected_voice_moves = {}
+voice_signal_state = {}
 
 # Guard against discord.py voice reconnect edge-case where the websocket is missing
 _original_voice_server_update = discord.voice_client.VoiceClient.on_voice_server_update
@@ -157,7 +158,18 @@ async def ensure_voice_connection(channel):
     try:
         return await channel.connect(timeout=15, reconnect=False)
     except asyncio.TimeoutError:
-        logger.warning('Voice connect timed out for guild %s channel %s; forcing cleanup and retrying', channel.guild.id, channel.name)
+        signal_data = voice_signal_state.get(channel.guild.id, {})
+        logger.warning(
+            'Voice connect timed out for guild %s channel %s; signals=%s; forcing cleanup and retrying',
+            channel.guild.id,
+            channel.name,
+            {
+                'state_at': signal_data.get('state_at'),
+                'state_channel': signal_data.get('state_channel'),
+                'server_at': signal_data.get('server_at'),
+                'endpoint': signal_data.get('endpoint'),
+            }
+        )
         stuck_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
         if stuck_client:
             try:
@@ -177,7 +189,18 @@ async def ensure_voice_connection(channel):
         except Exception:
             logger.exception('Voice reconnect retry failed for guild %s channel %s', channel.guild.id, channel.name)
     except Exception:
-        logger.exception('Voice connect failed for guild %s channel %s', channel.guild.id, channel.name)
+        signal_data = voice_signal_state.get(channel.guild.id, {})
+        logger.exception(
+            'Voice connect failed for guild %s channel %s; signals=%s',
+            channel.guild.id,
+            channel.name,
+            {
+                'state_at': signal_data.get('state_at'),
+                'state_channel': signal_data.get('state_channel'),
+                'server_at': signal_data.get('server_at'),
+                'endpoint': signal_data.get('endpoint'),
+            }
+        )
     finally:
         voice_connecting.discard(channel.guild.id)
     return None
@@ -341,6 +364,14 @@ async def on_ready():
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=random.choice(escuchar)))
 
 @bot.event
+async def on_voice_server_update(data):
+    guild_id = int(data['guild_id'])
+    state = voice_signal_state.setdefault(guild_id, {})
+    state['server_at'] = datetime.utcnow()
+    state['endpoint'] = data.get('endpoint')
+    logger.info('voice_server_update guild=%s endpoint=%s', guild_id, data.get('endpoint'))
+
+@bot.event
 async def on_message(message):
     if check_ban(message.author.id):
         return
@@ -374,6 +405,10 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     try:
         voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+        if member.id == bot.user.id:
+            state = voice_signal_state.setdefault(member.guild.id, {})
+            state['state_at'] = datetime.utcnow()
+            state['state_channel'] = after.channel.id if after.channel else None
         if member.id == bot.user.id:
             await prevent_vitoco_abuse(member, before, after)
         await update_nickname(member)
