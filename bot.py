@@ -32,6 +32,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from datetime import date
 from discord.ext import commands
+from discord.utils import MISSING
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from bs4 import BeautifulSoup
@@ -121,6 +122,24 @@ vitoco = 525102032017948673
 queue = []
 voice_connecting = set()
 protected_voice_moves = {}
+
+# Guard against discord.py voice reconnect edge-case where the websocket is missing
+_original_voice_server_update = discord.voice_client.VoiceClient.on_voice_server_update
+
+async def _safe_voice_server_update(self, data):
+    """Skip closing when websocket is missing to avoid AttributeError (4006 invalid session)."""
+    if getattr(self, 'ws', None) is MISSING:
+        logger.warning('Voice websocket missing during server update; ignoring stale payload')
+        return
+    try:
+        await _original_voice_server_update(self, data)
+    except AttributeError as exc:
+        if getattr(self, 'ws', None) is MISSING:
+            logger.warning('Voice websocket missing during server update; ignored %s', exc)
+            return
+        raise
+
+discord.voice_client.VoiceClient.on_voice_server_update = _safe_voice_server_update
 
 async def ensure_voice_connection(channel):
     """Connect or move the bot to the given voice channel with extra safety."""
