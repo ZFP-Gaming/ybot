@@ -710,7 +710,7 @@ async def sound(ctx, effect):
             queue.append(sound_effect)
     except Exception as e:
         logger.error(e, exc_info=True)
-        await ctx.send('Exploté 💣')
+        await ctx.author.send('Algo falló al reproducir el sonido. Avísame si se repite 🙏')
 
 @bot.command(name='sonidos')
 async def sound_list(ctx):
@@ -1171,7 +1171,7 @@ async def seba(ctx, effect):
             await ctx.send(random.choice(reactions))
     except Exception as e:
         logger.error(e)
-        await ctx.send('Exploté 💣')
+        await ctx.author.send('Algo falló al reproducir el sonido. Avísame si se repite 🙏')
 
 @bot.command()
 async def password(ctx):
