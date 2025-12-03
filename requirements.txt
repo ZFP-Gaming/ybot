@@ -46,7 +46,7 @@ toml==0.10.1
 tweepy==4.10.0
 typed-ast==1.4.1
 update-checker==0.18.0
-urllib3==1.25.10
+urllib3==1.26.16
 validators==0.18.1
 websocket-client==0.57.0
 websockets==8.1
