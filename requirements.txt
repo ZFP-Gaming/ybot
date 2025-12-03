@@ -10,7 +10,7 @@ click==7.1.2
 colorama==0.4.3
 cycler==0.10.0
 decorator==4.4.2
-discord==1.0.1
+discord==2.3.2
 discord.py==2.2.2
 Dumper==1.2.0
 Faker==4.17.1
