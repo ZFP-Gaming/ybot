@@ -142,6 +142,21 @@ async def _safe_voice_server_update(self, data):
 
 discord.voice_client.VoiceClient.on_voice_server_update = _safe_voice_server_update
 
+async def _clear_stale_voice_state(guild):
+    """Force-disconnect if Discord still thinks we're in voice but the client is not."""
+    stale_client = discord.utils.get(bot.voice_clients, guild=guild)
+    if stale_client:
+        try:
+            await stale_client.disconnect(force=True)
+        except Exception:
+            logger.exception('Force disconnect failed while clearing stale voice client for guild %s', guild.id)
+    me_voice = getattr(guild.me, 'voice', None)
+    if me_voice and me_voice.channel:
+        try:
+            await guild.change_voice_state(channel=None)
+        except Exception:
+            logger.exception('Failed to clear lingering guild voice state for guild %s', guild.id)
+
 async def ensure_voice_connection(channel):
     """Connect or move the bot to the given voice channel with extra safety."""
     voice_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
@@ -149,6 +164,16 @@ async def ensure_voice_connection(channel):
         if voice_client.channel != channel:
             await voice_client.move_to(channel)
         return voice_client
+
+    me_voice_state = getattr(channel.guild.me, 'voice', None)
+    if (not voice_client or not voice_client.is_connected()) and me_voice_state and me_voice_state.channel:
+        logger.info(
+            'Clearing stale voice state before connecting guild %s stuck_channel=%s',
+            channel.guild.id,
+            me_voice_state.channel.id,
+        )
+        await _clear_stale_voice_state(channel.guild)
+        await asyncio.sleep(1)
 
     if channel.guild.id in voice_connecting:
         logger.info('Voice connect already in progress for guild %s', channel.guild.id)
@@ -176,6 +201,7 @@ async def ensure_voice_connection(channel):
                 await stuck_client.disconnect(force=True)
             except Exception:
                 logger.exception('Force disconnect failed for guild %s', channel.guild.id)
+        await _clear_stale_voice_state(channel.guild)
         await asyncio.sleep(2)
         try:
             return await channel.connect(timeout=15, reconnect=False)
