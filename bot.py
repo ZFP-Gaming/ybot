@@ -121,6 +121,34 @@ vitoco = 525102032017948673
 queue = []
 voice_connecting = set()
 
+async def ensure_voice_connection(channel):
+    """Connect or move the bot to the given voice channel with extra safety."""
+    voice_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
+    if voice_client and voice_client.is_connected():
+        if voice_client.channel != channel:
+            await voice_client.move_to(channel)
+        return voice_client
+
+    if channel.guild.id in voice_connecting:
+        logger.info('Voice connect already in progress for guild %s', channel.guild.id)
+        return None
+
+    voice_connecting.add(channel.guild.id)
+    try:
+        return await channel.connect()
+    except IndexError:
+        logger.exception('Voice connect failed with IndexError for guild %s channel %s', channel.guild.id, channel.name)
+        await asyncio.sleep(1)
+        try:
+            return await channel.connect(reconnect=False)
+        except Exception:
+            logger.exception('Voice reconnect retry failed for guild %s channel %s', channel.guild.id, channel.name)
+    except Exception:
+        logger.exception('Voice connect failed for guild %s channel %s', channel.guild.id, channel.name)
+    finally:
+        voice_connecting.discard(channel.guild.id)
+    return None
+
 def manage_karma(id, amount):
     member = members.find_one({'id': id})
     value = 0 + amount
@@ -285,20 +313,11 @@ async def on_voice_state_update(member, before, after):
                 else:
                     print(f'{member.name} no tiene un sonido registrado')
             else:
-                if voice_client is None:
-                    roles = [o.name for o in member.roles]
-                    if ('ficha' in roles):
-                        channel = after.channel
-                        if member.guild.id in voice_connecting:
-                            logger.info('Voice connect already in progress, skipping duplicate attempt')
-                        else:
-                            voice_connecting.add(member.guild.id)
-                            try:
-                                await channel.connect()
-                            except Exception as connect_error:
-                                logger.error(f'Error al conectarse al canal de voz: {connect_error}')
-                            finally:
-                                voice_connecting.discard(member.guild.id)
+                roles = [o.name for o in member.roles]
+                if ('ficha' in roles) and (voice_client is None or not voice_client.is_connected()):
+                    voice_client = await ensure_voice_connection(after.channel)
+                    if voice_client is None:
+                        logger.warning('No se pudo conectar al canal de voz para %s', member)
         if voice_client and voice_client.is_connected() and voice_client.channel:
             connected_users = voice_client.channel.members
             if len(connected_users) == 1 and connected_users[0].bot:
@@ -564,12 +583,13 @@ async def play(ctx, *, query):
     id = ctx.message.author.id
     data = members.find_one({'id': id})
     roles = [o.name for o in ctx.message.author.roles]
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
     if ('💻 dev' in roles) or ('DJ' in roles and data['karma'] > 10):
-        if not voice_client:
-            channel = ctx.message.author.voice.channel
-            await channel.connect()
-        if ctx.author.voice and ctx.voice_client:
+        if not ctx.author.voice:
+            await ctx.send('No estás conectado a un canal de audio')
+            return
+
+        voice_client = await ensure_voice_connection(ctx.author.voice.channel)
+        if ctx.author.voice and ctx.voice_client and voice_client:
             url = query if validators.url(query) else youtube_search(query)
             if url:
                 song_there = os.path.isfile("song.mp3")
@@ -617,19 +637,17 @@ async def play(ctx, *, query):
 @bot.command(aliases = ['join'])
 async def join_channel(ctx):
     try:
-        channel = ctx.message.author.voice.channel
-        voice_client = ctx.guild.voice_client
+        if not ctx.author.voice:
+            await ctx.send('No estás conectado a un canal de audio')
+            return
 
+        voice_client = await ensure_voice_connection(ctx.author.voice.channel)
         if voice_client:
-            # Already connected somewhere, just move instead of raising an error
-            if voice_client.channel != channel:
-                await voice_client.move_to(channel)
+            await ctx.message.delete()
         else:
-            await channel.connect()
-
-        await ctx.message.delete()
+            await ctx.send('No me pude conectar al canal de audio 😞')
     except Exception as e:
-        logger.error(f'Error al conectarse al canal de voz error:{e}')
+        logger.error(f'Error al conectarse al canal de voz error:{e}', exc_info=True)
 
 @bot.command()
 async def leave(ctx):
@@ -653,37 +671,45 @@ async def stop(ctx):
         if ctx.author.voice and ctx.voice_client:
             vc = ctx.voice_client
             if vc.is_playing():
-                queue = []
+                queue.clear()
                 vc.stop()
                 await ctx.message.delete()
 
 @bot.command(aliases=['s'])
 async def sound(ctx, effect):
-    sound_effect = list(glob.glob(f'sound_effects/{effect}*.mp3'))[0]
+    sound_matches = list(glob.glob(f'sound_effects/{effect}*.mp3'))
+    if not sound_matches:
+        await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
+        return
+
+    sound_effect = sound_matches[0]
     logger.info(f'method=sound {ctx.message.author} > {sound_effect}')
     try:
-        if sound_effect and path.exists(sound_effect):
-            voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-            if not voice_client:
-                channel = ctx.message.author.voice.channel
-                await channel.connect()
-            if ctx.author.voice and ctx.voice_client:
-                vc = ctx.voice_client
-                await ctx.message.delete()
-                if not vc.is_playing():
-                    print('Empty queue, playing...')
-                    vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
-                    vc.source = discord.PCMVolumeTransformer(vc.source)
-                    vc.source.volume = bot.volume
-                else:
-                    print(f'Added to queue: {sound_effect}')
-                    queue.append(sound_effect)
-            else:
-                await ctx.send('No estás conectado a un canal de audio')
-        else:
+        if not path.exists(sound_effect):
             await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
+            return
+
+        if not ctx.author.voice:
+            await ctx.send('No estás conectado a un canal de audio')
+            return
+
+        voice_client = await ensure_voice_connection(ctx.author.voice.channel)
+        if voice_client is None or ctx.voice_client is None:
+            await ctx.send('No me pude conectar al canal de audio 😞')
+            return
+
+        vc = ctx.voice_client
+        await ctx.message.delete()
+        if not vc.is_playing():
+            print('Empty queue, playing...')
+            vc.play(discord.FFmpegPCMAudio(sound_effect), after=lambda x: check_queue(vc))
+            vc.source = discord.PCMVolumeTransformer(vc.source)
+            vc.source.volume = bot.volume
+        else:
+            print(f'Added to queue: {sound_effect}')
+            queue.append(sound_effect)
     except Exception as e:
-        logger.error(e)
+        logger.error(e, exc_info=True)
         await ctx.send('Exploté 💣')
 
 @bot.command(name='sonidos')
@@ -1109,11 +1135,12 @@ async def seba(ctx, effect):
     try:
         if ctx.message.author.id == 121417708469223428:
             if path.exists(sound_effect):
-                voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-                if not voice_client:
-                    channel = ctx.message.author.voice.channel
-                    await channel.connect()
-                if ctx.author.voice and ctx.voice_client:
+                if not ctx.author.voice:
+                    await ctx.send('No estás conectado a un canal de audio')
+                    return
+
+                voice_client = await ensure_voice_connection(ctx.message.author.voice.channel)
+                if ctx.author.voice and ctx.voice_client and voice_client:
                     vc = ctx.voice_client
                     if not vc.is_playing():
                         print('Empty queue, playing...')
@@ -1127,7 +1154,7 @@ async def seba(ctx, effect):
                         for i in range(10):
                             queue.append(sound_effect)
                 else:
-                    await ctx.send('No estás conectado a un canal de audio')
+                    await ctx.send('No me pude conectar al canal de audio 😞')
             else:
                 await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
         else:
@@ -1411,15 +1438,22 @@ async def horiclicker(ctx):
         await ctx.send(file = discord.File("images/horiclick.gif"))
         await ctx.send(f'🐰 horiclicks: {bot.horiclicks}')
     else:
-        if voice_client is None:
-            channel = ctx.message.author.voice.channel
-            await channel.connect()
-        voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/fbi.mp3'), after=lambda x: check_queue(voice_client))
-        voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
-        voice_client.source.volume = bot.volume
-        await ctx.message.add_reaction('🚨')
-        await ctx.message.add_reaction('🚓')
-        await ctx.message.add_reaction('👮')
+        if not ctx.author.voice:
+            await ctx.send('No estás conectado a un canal de audio')
+            return
+
+        if voice_client is None or not voice_client.is_connected():
+            voice_client = await ensure_voice_connection(ctx.author.voice.channel)
+
+        if voice_client:
+            voice_client.play(discord.FFmpegPCMAudio(f'sound_effects/fbi.mp3'), after=lambda x: check_queue(voice_client))
+            voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+            voice_client.source.volume = bot.volume
+            await ctx.message.add_reaction('🚨')
+            await ctx.message.add_reaction('🚓')
+            await ctx.message.add_reaction('👮')
+        else:
+            await ctx.send('No me pude conectar al canal de audio 😞')
 
 print(i18n.t('base.start'))
 asyncio.run(main())
