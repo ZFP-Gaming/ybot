@@ -22,7 +22,6 @@ import i18n
 import logging
 import replicate
 import sentry_sdk
-import openai
 
 from os import path
 from os import listdir
@@ -77,8 +76,6 @@ sentry_sdk.init(
     dsn=SENTRY_DSN,
     traces_sample_rate=1.0
 )
-
-openai.api_key = os.getenv('OPENAI_KEY')
 
 db = MongoClient(MONGO_URL)
 exp = db.bot.exp
@@ -1423,25 +1420,6 @@ async def horiclicker(ctx):
         await ctx.message.add_reaction('🚨')
         await ctx.message.add_reaction('🚓')
         await ctx.message.add_reaction('👮')
-
-@bot.command()
-async def chatgpt(ctx, *, prompt):
-    model_engine = "text-davinci-003"
-
-    msg = await ctx.send(f"“{prompt}”\n> Generando...")
-
-    completion = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=1024,
-        n=1,
-        stop=None,
-        temperature=0.5
-    )
-
-    response = completion.choices[0].text
-    await msg.edit(content=response)
-
 
 print(i18n.t('base.start'))
 asyncio.run(main())
