@@ -155,7 +155,20 @@ async def ensure_voice_connection(channel):
 
     voice_connecting.add(channel.guild.id)
     try:
-        return await channel.connect()
+        return await channel.connect(timeout=15, reconnect=False)
+    except asyncio.TimeoutError:
+        logger.warning('Voice connect timed out for guild %s channel %s; forcing cleanup and retrying', channel.guild.id, channel.name)
+        stuck_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
+        if stuck_client:
+            try:
+                await stuck_client.disconnect(force=True)
+            except Exception:
+                logger.exception('Force disconnect failed for guild %s', channel.guild.id)
+        await asyncio.sleep(2)
+        try:
+            return await channel.connect(timeout=15, reconnect=False)
+        except Exception:
+            logger.exception('Voice reconnect after timeout failed for guild %s channel %s', channel.guild.id, channel.name)
     except IndexError:
         logger.exception('Voice connect failed with IndexError for guild %s channel %s', channel.guild.id, channel.name)
         await asyncio.sleep(1)
