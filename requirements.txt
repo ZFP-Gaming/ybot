@@ -49,7 +49,7 @@ update-checker==0.18.0
 urllib3==1.26.16
 validators==0.18.1
 websocket-client==0.57.0
-websockets==8.1
+websockets==10.4
 wikipedia==1.4.0
 wrapt==1.12.1
 yarl==1.5.1
