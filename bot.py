@@ -768,7 +768,7 @@ async def join_channel(ctx):
         if voice_client:
             await ctx.message.delete()
         else:
-            await ctx.send('No me pude conectar al canal de audio 😞')
+            await ctx.send('No me pude conectar al canal de audio 😞', delete_after=10)
     except Exception as e:
         logger.error(f'Error al conectarse al canal de voz error:{e}', exc_info=True)
 
@@ -818,7 +818,7 @@ async def sound(ctx, effect):
 
         voice_client = await ensure_voice_connection(ctx.author.voice.channel)
         if voice_client is None or ctx.voice_client is None:
-            await ctx.send('No me pude conectar al canal de audio 😞')
+            await ctx.send('No me pude conectar al canal de audio 😞', delete_after=10)
             return
 
         vc = ctx.voice_client
@@ -1277,7 +1277,7 @@ async def seba(ctx, effect):
                         for i in range(10):
                             queue.append(sound_effect)
                 else:
-                    await ctx.send('No me pude conectar al canal de audio 😞')
+                    await ctx.send('No me pude conectar al canal de audio 😞', delete_after=10)
             else:
                 await ctx.send('No tengo ese sonido compare, envía un correo a soporte@ybot.com')
         else:
@@ -1576,7 +1576,7 @@ async def horiclicker(ctx):
             await ctx.message.add_reaction('🚓')
             await ctx.message.add_reaction('👮')
         else:
-            await ctx.send('No me pude conectar al canal de audio 😞')
+            await ctx.send('No me pude conectar al canal de audio 😞', delete_after=10)
 
 print(i18n.t('base.start'))
 asyncio.run(main())
