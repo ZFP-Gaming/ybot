@@ -120,6 +120,7 @@ vitoco = 525102032017948673
 
 queue = []
 voice_connecting = set()
+protected_voice_moves = {}
 
 async def ensure_voice_connection(channel):
     """Connect or move the bot to the given voice channel with extra safety."""
@@ -148,6 +149,59 @@ async def ensure_voice_connection(channel):
     finally:
         voice_connecting.discard(channel.guild.id)
     return None
+
+async def get_audit_actor(guild, action, target_id):
+    """Return the user responsible for the audit log action on the target, if available."""
+    try:
+        async for entry in guild.audit_logs(limit=5, action=action):
+            target = getattr(entry.target, 'id', None)
+            if target == target_id:
+                return entry.user
+    except discord.Forbidden:
+        logger.warning('Missing permissions to read audit logs for guild %s', guild.id)
+    except Exception:
+        logger.exception('Error fetching audit log entries for guild %s', guild.id)
+    return None
+
+async def prevent_vitoco_abuse(member, before, after):
+    """Block vitoco from moving or muting the bot."""
+    if member.guild is None:
+        return
+
+    guild_id = member.guild.id
+    expected_channel_id = protected_voice_moves.get(guild_id)
+    if expected_channel_id and after.channel and after.channel.id == expected_channel_id:
+        protected_voice_moves.pop(guild_id, None)
+        return
+
+    if before.channel and before.channel != after.channel:
+        action = discord.AuditLogAction.member_move
+        if after.channel is None and hasattr(discord.AuditLogAction, 'member_disconnect'):
+            action = discord.AuditLogAction.member_disconnect
+
+        actor = await get_audit_actor(member.guild, action, member.id)
+        if actor and actor.id == vitoco:
+            logger.info('Reverting bot move triggered by vitoco in guild %s', guild_id)
+            protected_voice_moves[guild_id] = before.channel.id
+            try:
+                voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+                if voice_client and voice_client.is_connected():
+                    await voice_client.move_to(before.channel)
+                else:
+                    await ensure_voice_connection(before.channel)
+            except Exception:
+                logger.exception('Failed to move bot back after vitoco attempt in guild %s', guild_id)
+
+    if after.mute and not before.mute:
+        actor = await get_audit_actor(member.guild, discord.AuditLogAction.member_update, member.id)
+        if actor and actor.id == vitoco:
+            logger.info('Preventing bot mute triggered by vitoco in guild %s', guild_id)
+            try:
+                await member.edit(mute=False, reason='Blocked bot mute by vitoco')
+            except discord.Forbidden:
+                logger.warning('Missing permissions to unmute the bot in guild %s', guild_id)
+            except Exception:
+                logger.exception('Failed to unmute bot after vitoco attempt in guild %s', guild_id)
 
 def manage_karma(id, amount):
     member = members.find_one({'id': id})
@@ -288,6 +342,8 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     try:
         voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+        if member.id == bot.user.id:
+            await prevent_vitoco_abuse(member, before, after)
         await update_nickname(member)
         if check_ban(member.id):
             return
